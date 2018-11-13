@@ -46,11 +46,11 @@ There are 3 different modes of editing operations: Connection, Edge Removal, and
 
 #### Connection Mode ####
 
-	While in connection mode, you may select nodes in the skeleton/graph view by clicking on them.  You may only select nodes which belong to different connected components.  If the existing endpoints or junctions that exist in the graph visualization do not correspond to where you would like to make a connection (eg. there is a connection missing at the branching point of a root), you may select any of the underlying vertices on the skeleton by clicking near them.  Once one node is selected each upon two separate components, you may click the "Accept Connection" button to create a new edge between those nodes.
+While in connection mode, you may select nodes in the skeleton/graph view by clicking on them.  You may only select nodes which belong to different connected components.  If the existing endpoints or junctions that exist in the graph visualization do not correspond to where you would like to make a connection (eg. there is a connection missing at the branching point of a root), you may select any of the underlying vertices on the skeleton by clicking near them.  Once one node is selected each upon two separate components, you may click the "Accept Connection" button to create a new edge between those nodes.
 
-	Also while in connection mode, you may select components from the drop-down menus in the same panel (the components are sorted by the total length of their connected edges, largest components first) and restrict the items displayed to only those components, which may help you more easily identify where likely connections should be.
+Also while in connection mode, you may select components from the drop-down menus in the same panel (the components are sorted by the total length of their connected edges, largest components first) and restrict the items displayed to only those components, which may help you more easily identify where likely connections should be.
 
-	Finally, you can display the bounding boxes for the different components in the skeleton through the corresponding checkbox.  This again can serve as a visual cue to help narrow in on missing connections
+Finally, you can display the bounding boxes for the different components in the skeleton through the corresponding checkbox.  This again can serve as a visual cue to help narrow in on missing connections
 
 Edge Removal and Splitting information -
 	
@@ -58,11 +58,11 @@ Edge Removal and Splitting information -
 
 #### Edge Removal Mode ####
 	
-	While in edge removal mode, if you click on an edge in the skeleton, it should become highlighted in white, and scaled up.  If the selected edge is one that you would like to remove, you may then click the "Accept Removal" button, and it will be deleted from the graph.  This can be used to remove errant connections between nodes, abandoned edges etc.
+While in edge removal mode, if you click on an edge in the skeleton, it should become highlighted in white, and scaled up.  If the selected edge is one that you would like to remove, you may then click the "Accept Removal" button, and it will be deleted from the graph.  This can be used to remove errant connections between nodes, abandoned edges etc.
 
-Edge Splitting Mode -
+#### Edge Splitting Mode ####
 	
-	The edge splitting mode is primarily intended for situations where two branches come closely together and then split appart eg...
+The edge splitting mode is primarily intended for situations where two branches come closely together and then split appart eg...
 
     |    |
      \  /
@@ -74,7 +74,7 @@ Edge Splitting Mode -
     |    |
 
 
-    and can be used to split the merged middle edge so that you have two separate parallel roots - eg...
+and can be used to split the merged middle edge so that you have two separate parallel roots - eg...
 
     |    |
      \  /
@@ -85,4 +85,4 @@ Edge Splitting Mode -
      /  \
     |    |
 
-   	To accomplish this, while in the edge splitting mode, you will first select the center edge that you would like to split (which will highlight it in white), and then select the two or more edges coming out of that central edge that correspond to a single root.  Eg. in the above scenario, you might first click the center edge, and then the edge on the top right, and then the edge on the bottom right.  Once the set of edges that go together to form a single root are selected, you can click the "Accept Removal" operation to perform the operation.
+To accomplish this, while in the edge splitting mode, you will first select the center edge that you would like to split (which will highlight it in white), and then select the two or more edges coming out of that central edge that correspond to a single root.  Eg. in the above scenario, you might first click the center edge, and then the edge on the top right, and then the edge on the bottom right.  Once the set of edges that go together to form a single root are selected, you can click the "Accept Removal" operation to perform the operation.
