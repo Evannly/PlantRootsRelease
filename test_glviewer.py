@@ -4,10 +4,10 @@ import math
 from Arcball import ArcballCamera, arcVec
 
 from RootsTool import IssuesGL, VBOSphere
-from ConnectionTabWidget import Ui_ConnectionTabWidget
-from BreakTabWidget import Ui_BreakTabWidget
-from SplitTabWidget import Ui_SplitTabWidget
-from AddNodeTabWidget import Ui_AddNodeTabWidget
+# from ConnectionTabWidget import Ui_ConnectionTabWidget
+# from BreakTabWidget import Ui_BreakTabWidget
+# from SplitTabWidget import Ui_SplitTabWidget
+# from AddNodeTabWidget import Ui_AddNodeTabWidget
 
 from PyQt5 import QtCore, QtGui, QtOpenGL, QtWidgets
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
@@ -37,12 +37,9 @@ import OpenGL.GL as gl
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
-from ModeOptions import ConnectionModeOptions, BreakModeOptions, SplitModeOptions, AddNodeOptions
+# from ModeOptions import ConnectionModeOptions, BreakModeOptions, SplitModeOptions, AddNodeOptions
 
-
-from RootsTool import  Point3d, RootAttributes, Skeleton, mgraph
-
-
+from RootsTool import Point3d, RootAttributes, Skeleton, mgraph
 
 NoMode = 0
 ConnectionMode = 1
@@ -57,6 +54,7 @@ def p3d2arr(p3d : Point3d):
     else:
         return p3d
 
+
 class GLWidget(QtOpenGL.QGLWidget):
     xRotationChanged = pyqtSignal(int)
     yRotationChanged = pyqtSignal(int)
@@ -65,8 +63,8 @@ class GLWidget(QtOpenGL.QGLWidget):
     @pyqtSlot(str)
     def loadFileEvent(self, filename : str):
         self.graph.loadFromFile(filename)
-        self.recenter()
-    
+        self.recenter = self.recenter()
+
     @pyqtSlot(int, int)
     def acceptConnection(self, v0id, v1id):
         pass
@@ -117,10 +115,10 @@ class GLWidget(QtOpenGL.QGLWidget):
         
         self.graph = mgraph()
 
-        self.connectionOptions = ConnectionModeOptions(self, self.graph)
-        self.breakOptions = BreakModeOptions(self, self.graph)
-        self.splitOptions = SplitModeOptions(self, self.graph)
-        self.addNodeOptions = AddNodeOptions(self, self.graph)
+        # self.connectionOptions = ConnectionModeOptions(self, self.graph)
+        # self.breakOptions = BreakModeOptions(self, self.graph)
+        # self.splitOptions = SplitModeOptions(self, self.graph)
+        # self.addNodeOptions = AddNodeOptions(self, self.graph)
 
         self.modes = {-1 : 'NoMode', 0 : 'Connection Mode', 1 : 'Separation Mode', 2 : 'Spltting Mode'}
         
@@ -293,8 +291,8 @@ class GLWidget(QtOpenGL.QGLWidget):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
-        #gluLookAt(pos[0], pos[1], pos[2], lpos[0], lpos[1], lpos[2], up[0], up[1], up[2])
-        #self.arcball.rotate()
+        # gluLookAt(pos[0], pos[1], pos[2], lpos[0], lpos[1], lpos[2], up[0], up[1], up[2])
+        # self.arcball.rotate()
 
 
 
@@ -573,38 +571,38 @@ class GLWidget(QtOpenGL.QGLWidget):
         return dirVec
             
     
-    def enterConnectionMode(self, ConnectionWidget : Ui_ConnectionTabWidget):
-        self.currentMode = 0
-        self.connectionWidget = ConnectionWidget
-        self.connectionOptions.exitMode()
-        self.breakOptions.exitMode()
-        self.splitOptions.exitMode()
-        self.addNodeOptions.exitMode()
-        self.connectionOptions.enterMode(self.graph.getNumComponents(), ConnectionWidget)
+    # def enterConnectionMode(self, ConnectionWidget : Ui_ConnectionTabWidget):
+    #     self.currentMode = 0
+    #     self.connectionWidget = ConnectionWidget
+    #     self.connectionOptions.exitMode()
+    #     self.breakOptions.exitMode()
+    #     self.splitOptions.exitMode()
+    #     self.addNodeOptions.exitMode()
+    #     self.connectionOptions.enterMode(self.graph.getNumComponents(), ConnectionWidget)
+    #
+    #
+    # def enterBreakMode(self, BreakWidget : Ui_BreakTabWidget):
+    #     self.currentMode = 1
+    #     self.connectionOptions.exitMode()
+    #     self.breakOptions.exitMode()
+    #     self.splitOptions.exitMode()
+    #     self.addNodeOptions.exitMode()
+    #     self.breakOptions.enterMode(BreakWidget)
+    #
+    #
+    # def enterSplitMode(self, SplitWidget : Ui_SplitTabWidget):
+    #     self.currentMode = 2
+    #     self.connectionOptions.exitMode()
+    #     self.breakOptions.exitMode()
+    #     self.splitOptions.exitMode()
+    #     self.addNodeOptions.exitMode()
+    #     self.splitOptions.enterMode(SplitWidget)
 
-
-    def enterBreakMode(self, BreakWidget : Ui_BreakTabWidget):
-        self.currentMode = 1
-        self.connectionOptions.exitMode()
-        self.breakOptions.exitMode()
-        self.splitOptions.exitMode()
-        self.addNodeOptions.exitMode()
-        self.breakOptions.enterMode(BreakWidget)
-
-        
-    def enterSplitMode(self, SplitWidget : Ui_SplitTabWidget):
-        self.currentMode = 2
-        self.connectionOptions.exitMode()
-        self.breakOptions.exitMode()
-        self.splitOptions.exitMode()
-        self.addNodeOptions.exitMode()
-        self.splitOptions.enterMode(SplitWidget)
-
-    def enterAddNodeMode(self, AddNodeWidget : Ui_AddNodeTabWidget):
-        self.currentMode = 3
-        self.connectionOptions.exitMode()
-        self.breakOptions.exitMode()
-        self.splitOptions.exitMode()
-        self.addNodeOptions.exitMode()
-        self.addNodeOptions.enterMode(AddNodeWidget)
+    # def enterAddNodeMode(self, AddNodeWidget : Ui_AddNodeTabWidget):
+    #     self.currentMode = 3
+    #     self.connectionOptions.exitMode()
+    #     self.breakOptions.exitMode()
+    #     self.splitOptions.exitMode()
+    #     self.addNodeOptions.exitMode()
+    #     self.addNodeOptions.enterMode(AddNodeWidget)
         

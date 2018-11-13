@@ -5,27 +5,20 @@ Created on Tue Nov 28 02:48:14 2017
 @author: Will
 """
 
-from RootsTool import  Point3d, RootAttributes, Skeleton, mgraph
+from RootsTool import Point3d, RootAttributes, Skeleton, mgraph
 #MetaNode3d, MetaEdge3d, MetaGraph,
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import QtCore
-from PyQt5 import QtGui
 
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5 import QtWidgets
-#from SkeletonViewer import *
 
 import sys
-from RootsUI import Ui_RootsUI
 from EditingTabWidget import Ui_EditingTabWidget
 from VisualizationTabWidget import Ui_VisualizationTabWidget
-#from ConnectionTabWidget import Ui_ConnectionTabWidget
-#from BreakTabWidget import Ui_BreakTabWidget
-#from SplitTabWidget import Ui_SplitTabWidget
-#from AddNodeTabWidget import Ui_AddNodeTabWidget
 
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -36,43 +29,15 @@ import test_glviewer as tgl
 #from MetaGraphThread import MetaGraphThread
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread
 import types
-
-#class RootsGUI(Ui_RootsUI):
-#    def __init__(self, dialog):
-#        Ui_RootsUI.__init__(self)
-#        self.setupUi(dialog)
-#        self.dlg = dialog
-#        self.LoadFile.clicked.connect(self.PickFile)
-##        layout = self.GLWidgetHolder.layout
-#        layout = QVBoxLayout(self.GLWidgetHolder)
-#        layout.addStretch(1)
-#        self.GLView = tgl.GLWidget()
-##        self.GLView = SkeletonViewer()
-#        layout.addChildWidget(self.GLView)
-#        
-#        self.GLWidgetHolder.setLayout(layout)
-#        self.GLWidgetHolder.show()
-#        #self.GLView = SkeletonViewer(self.GLWidgetHolder)
-#        
-#    def PickFile(self):
-#        options = QFileDialog.Options()
-#        
-#        options |= QFileDialog.DontUseNativeDialog
-#        self.loadFileName = QFileDialog.getOpenFileName(self.dlg, 'Open File', "")
-#        qDebug(str(self.loadFileName[0]))
-#        self.LoadSkeleton(str(self.loadFileName[0]))
-#        
-#    def LoadSkeleton(self, filename):
-#        self.skeleton = Skeleton(filename)
-#        self.GLView.setSkeleton(self.skeleton)
+from tkinter import messagebox
 
 NoMode = 0
 ConnectionMode = 1
 BreakMode = 2
-SplitMode = 3
+SplitEdgeMode = 3
+RemoveComponent = 4
+SplitNodeMode = 5
 
-
-        
 
 def getColorList(size, colormap):
     colorList = []
@@ -91,6 +56,7 @@ def getColorList(size, colormap):
 from math import log10, floor
 def round_to_2(x):
   return round(x, -int(floor(log10(abs(x)))) + 1)
+
 
 class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
 
@@ -253,7 +219,7 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         alpha = 1.0 * alphaInt / 100.0
         self.graph.setMeshAlpha(alpha)
 
-    def __init__(self, widget, graphObject : mgraph, viewSkeletonButton, viewGraphButton, viewBothButton):
+    def __init__(self, widget, graphObject: mgraph, viewSkeletonButton, viewGraphButton, viewBothButton):
         Ui_VisualizationTabWidget.__init__(self)
         QObject.__init__(self)
         self.setupUi(widget)
@@ -264,11 +230,13 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.currentEdgeSelectionColor = QColor(255, 255, 255)
         self.currentMeshColor = QColor(0, 0, 255)
 
-        self.graph.setConstantNodeColor(self.currentNodeColor.redF(), self.currentNodeColor.greenF(), self.currentNodeColor.blueF())
-        self.graph.setEdgeSelectionColor(self.currentEdgeSelectionColor.redF(), self.currentEdgeSelectionColor.greenF(), self.currentEdgeSelectionColor.blueF())
-        
-        self.graph.setMeshColor(self.currentMeshColor.redF(), self.currentMeshColor.greenF(), self.currentMeshColor.blueF())
-        
+        self.graph.setConstantNodeColor(self.currentNodeColor.redF(), self.currentNodeColor.greenF(),
+                                        self.currentNodeColor.blueF())
+        self.graph.setEdgeSelectionColor(self.currentEdgeSelectionColor.redF(), self.currentEdgeSelectionColor.greenF(),
+                                         self.currentEdgeSelectionColor.blueF())
+
+        self.graph.setMeshColor(self.currentMeshColor.redF(), self.currentMeshColor.greenF(),
+                                self.currentMeshColor.blueF())
 
         self.edgeColorizationOptions = {}
         self.edgeColorizationOptions[0] = "Thickness"
@@ -294,8 +262,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.heatmapOptions[8] = "BuGn"
         self.heatmapOptions[9] = "jet"
 
-
-
         for key in self.edgeColorizationOptions:
             self.edgeColorization.addItem(self.edgeColorizationOptions[key])
 
@@ -305,9 +271,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         for key in self.heatmapOptions:
             self.edgeHeatmapType.addItem(self.heatmapOptions[key])
             self.nodeHeatmapType.addItem(self.heatmapOptions[key])
-        
-
-
 
         self.edgeColorization.currentIndexChanged.connect(self.edgeColorizationChanged)
         self.nodeColorization.currentIndexChanged.connect(self.nodeColorizationChanged)
@@ -329,12 +292,10 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.constantNodeColor.clicked.connect(self.constantNodeColorClicked)
         self.edgeSelectionColor.clicked.connect(self.edgeSelectionColorClicked)
 
-
         self.showEndpoints.setChecked(True)
         self.showJunctions.setChecked(True)
         self.showEdges.setChecked(True)
         self.magnifyNonBridges.setChecked(False)
-        
 
         self.loadMeshButton.clicked.connect(self.loadMeshClicked)
         self.meshColorButton.clicked.connect(self.meshColorClicked)
@@ -342,18 +303,15 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
 
         self.displayMesh.setChecked(False)
 
-
-        #setting slider callbacks and values
+        # setting slider callbacks and values
         self.edgeScale.valueChanged.connect(self.edgeScaleChanged)
         self.junctionScale.valueChanged.connect(self.junctionScaleChanged)
         self.endpointScale.valueChanged.connect(self.endpointScaleChanged)
         self.edgeColorFloor.sliderReleased.connect(self.edgeColorFloorChanged)
         self.edgeColorCeiling.sliderReleased.connect(self.edgeColorCeilingChanged)
         self.nodeColorFloor.sliderReleased.connect(self.nodeColorFloorChanged)
-        self.nodeColorCeiling.sliderReleased.connect(self.nodeColorCeilingChanged)       
+        self.nodeColorCeiling.sliderReleased.connect(self.nodeColorCeilingChanged)
         self.meshAlpha.sliderReleased.connect(self.meshAlphaChanged)
-
-
 
         self.edgeColorFloor.setSliderDown(True)
         self.edgeColorCeiling.setSliderDown(True)
@@ -374,52 +332,42 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.nodeColorCeiling.setSliderDown(False)
         self.meshAlpha.setSliderDown(False)
 
-
-
-        
-
-        
-        
-        
-
         self.viewSkeleton.emit(True)
 
-        #self.geometryVisualization.currentIndexChanged.connect(self.geometryVisualizationChanged)
+        # self.geometryVisualization.currentIndexChanged.connect(self.geometryVisualizationChanged)
 
-        #self.viewGraph.connect(viewGraphButton.trigger)
-        #graphObject.enteringGraphView.connect(self.enteringGraphView)
+        # self.viewGraph.connect(viewGraphButton.trigger)
+        # graphObject.enteringGraphView.connect(self.enteringGraphView)
 
-        #self.viewSkeleton.connect(viewSkeletonButton.trigger)
-        #graphObject.enteringSkeletonView.connect(self.enteringSkelView)
+        # self.viewSkeleton.connect(viewSkeletonButton.trigger)
+        # graphObject.enteringSkeletonView.connect(self.enteringSkelView)
 
-        #self.viewBoth.connect(viewBothButton.trigger)
-        #graphObject.enteringBothView.connect(self.enteringBothView)
+        # self.viewBoth.connect(viewBothButton.trigger)
+        # graphObject.enteringBothView.connect(self.enteringBothView)
 
+        # self.lowColor = QColor(Qt.blue)
+        # self.highColor = QColor(Qt.red)
 
-        #self.lowColor = QColor(Qt.blue)
-        #self.highColor = QColor(Qt.red)
+        # self.lowColorButton.setAutoFillBackground(True)
+        # self.highColorButton.setAutoFillBackground(True)
 
-        #self.lowColorButton.setAutoFillBackground(True)
-        #self.highColorButton.setAutoFillBackground(True)
+        # self.setLowColor(self.lowColor)
+        # self.setHighColor(self.highColor)
 
-        #self.setLowColor(self.lowColor)
-        #self.setHighColor(self.highColor)
+        # self.lowColorButton.clicked.connect(self.pickLowColor)
+        # self.highColorButton.clicked.connect(self.pickHighColor)
 
-        #self.lowColorButton.clicked.connect(self.pickLowColor)
-        #self.highColorButton.clicked.connect(self.pickHighColor)
-       
-        #self.lowColorChanged.connect(graphObject.lowColorChanged)
-        #self.highColorChanged.connect(graphObject.highColorChanged)
+        # self.lowColorChanged.connect(graphObject.lowColorChanged)
+        # self.highColorChanged.connect(graphObject.highColorChanged)
 
-        #self.lowColorChanged.emit(self.lowColor.redF(), self.lowColor.greenF(), self.lowColor.blueF())
-        #self.highColorChanged.emit(self.highColor.redF(), self.highColor.greenF(), self.highColor.blueF())
-        #self.geometryVisualizationOptions = {}
-        #self.geometryVisualizationOptions[0] = "View Skeleton"
-        #self.geometryVisualizationOptions[1] = "View MetaGraph"
-        #self.geometryVisualizationOptions[2] = "View Both"
-        #for key in self.geometryVisualizationOptions:
+        # self.lowColorChanged.emit(self.lowColor.redF(), self.lowColor.greenF(), self.lowColor.blueF())
+        # self.highColorChanged.emit(self.highColor.redF(), self.highColor.greenF(), self.highColor.blueF())
+        # self.geometryVisualizationOptions = {}
+        # self.geometryVisualizationOptions[0] = "View Skeleton"
+        # self.geometryVisualizationOptions[1] = "View MetaGraph"
+        # self.geometryVisualizationOptions[2] = "View Both"
+        # for key in self.geometryVisualizationOptions:
         #    self.geometryVisualization.addItem(self.geometryVisualizationOptions[key])
-
 
     #@pyqtSlot(bool)
     #def pickLowColor(self, someBool):
@@ -480,6 +428,7 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
     #    self.geometryVisualization.currentIndexChanged.disconnect(self.geometryVisualizationChanged)
     #    self.geometryVisualization.setCurrentIndex(2)
     #    self.geometryVisualization.currentIndexChanged.connect(self.geometryVisualizationChanged)
+
 
 class EditingTabWidget(Ui_EditingTabWidget, QObject):
 
@@ -543,8 +492,13 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         #    self.modeChangeSig.emit(self.mode)
 
     @pyqtSlot(bool)
-    def splitModePressed(self, pressed : bool):
-        self.changeMode(SplitMode)
+    def removeComponentPressed(self, pressed: bool):
+        # messagebox.showinfo("Error", "Ops. Removing component in construction")
+        self.changeMode(RemoveComponent)
+
+    @pyqtSlot(bool)
+    def splitEdgeModePressed(self, pressed : bool):
+        self.changeMode(SplitEdgeMode)
         #self.exitCurrentMode()
         #if self.mode != SplitMode:
         #    self.mode = SplitMode
@@ -554,15 +508,33 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         #    self.modeChangeSig.emit(self.mode)
 
     @pyqtSlot(bool)
+    def splitNodeModePressed(self, pressed: bool):
+        # messagebox.showinfo("Error", "Ops. Splitting node in construction")
+        self.changeMode(SplitNodeMode)
+
+
+    @pyqtSlot(bool)
     def acceptRemovalPressed(self, pressed : bool):
         if self.mode == BreakMode:
             if self.graph != None:
                 self.graph.breakOperation()
                 self.updateWidget()
-        if self.mode == SplitMode:
+        if self.mode == SplitEdgeMode:
             if self.graph != None:
                 self.graph.splitOperation()
                 self.updateWidget()
+        # add code to c++
+        if self.mode == RemoveComponent:
+            if self.graph != None:
+                print('Ops. Removing component in construction')
+        #         self.graph.RemoveComponentOperation()
+        #         self.updateWidget()
+        if self.mode == SplitNodeMode:
+            if self.graph != None:
+                print('Ops. Splitting node in construction')
+        #         self.graph.splitNodeOperation()
+        #         self.updateWidget()
+
 
     def __init__(self, graphObject : mgraph, widget=None):
         Ui_EditingTabWidget.__init__(self)
@@ -583,10 +555,12 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         self.ConnectionModeButton.clicked.connect(self.connectionModePressed)
         self.AcceptConnectionButton.clicked.connect(self.acceptConnectionPressed)
         self.BreakModeButton.clicked.connect(self.breakModePressed)
-        self.SplitModeButton.clicked.connect(self.splitModePressed)
+        self.SplitModeButton.clicked.connect(self.splitEdgeModePressed)
         self.AcceptRemovalButton.clicked.connect(self.acceptRemovalPressed)
+        self.RemoveComponentButton.clicked.connect(self.removeComponentPressed)
+        self.SplitModeButton_Node.clicked.connect(self.splitNodeModePressed)
 
-        
+
     def changeMode(self, mode : int):
         if self.mode != mode:
             self.mode = mode
@@ -647,33 +621,6 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
             self.edgesToBreak.setText("")
             self.ComponentOne.clear()
             self.ComponentTwo.clear()
-
-#class ConnectionTabWidget(Ui_ConnectionTabWidget):
-#    def __init__(self, widget=None):
-#        Ui_ConnectionTabWidget.__init__(self)
-#        self.setupUi(widget)
-#class BreakTabWidget(Ui_BreakTabWidget, QObject):
-#    def __init__(self, widget=None):
-#        Ui_BreakTabWidget.__init__(self)
-#        QObject.__init__(self)
-#        self.setupUi(widget)
-#        self.widget = widget
-
-#class SplitTabWidget(Ui_SplitTabWidget, QObject):
-#    def __init__(self, widget=None):
-#        Ui_SplitTabWidget.__init__(self)
-#        QObject.__init__(self)
-#        self.setupUi(widget)
-
-#        self.widget = widget
-
-#class AddNodeTabWidget(Ui_AddNodeTabWidget, QObject):
-#    def __init__(self, widget = None):
-#        Ui_AddNodeTabWidget.__init__(self)
-#        QObject.__init__(self)
-#        self.setupUi(widget)
-
-#        self.widget = widget
         
 
 class RootsTabbedProgram(QMainWindow):
@@ -903,31 +850,31 @@ class RootsTabbedProgram(QMainWindow):
         self.glwidget.enterBreakMode(self.BreakTab)
         
     def enterSplitMode(self):
-        if self.currentMode == SplitMode or self.currentMode == -2:
+        if self.currentMode == SplitEdgeMode or self.currentMode == -2:
             return
-        self.currentMode = SplitMode
+        self.currentMode = SplitEdgeMode
         self.tabWidget.setCurrentIndex(3)
         self.glwidget.enterSplitMode(self.SplitTab)
 
-    def enterAddNodeMode(self):
-        if self.currentMode == 3:
-            return
-        self.closeDockWidget()
-        self.currentMode = 3
-
-        self.closeDockWidget()
-
-        dock = QDockWidget('Add Node Tab', self)
-        dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
-        dockWidget = QWidget()
-        AddTab = AddNodeTabWidget(dockWidget)
-
-        dock.setWidget(dockWidget)
-        label = QtWidgets.QLabel('', dock)
-        dock.setTitleBarWidget(label)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
-        self.glwidget.enterAddNodeMode(AddTab)
-        self.dockedWidget = dock
+    # def enterAddNodeMode(self):
+    #     if self.currentMode == 3:
+    #         return
+    #     self.closeDockWidget()
+    #     self.currentMode = 3
+    #
+    #     self.closeDockWidget()
+    #
+    #     dock = QDockWidget('Add Node Tab', self)
+    #     dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
+    #     dockWidget = QWidget()
+    #     AddTab = AddNodeTabWidget(dockWidget)
+    #
+    #     dock.setWidget(dockWidget)
+    #     label = QtWidgets.QLabel('', dock)
+    #     dock.setTitleBarWidget(label)
+    #     self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
+    #     self.glwidget.enterAddNodeMode(AddTab)
+    #     self.dockedWidget = dock
 
     
     def eventFilter(self, obj, event):
