@@ -52,9 +52,9 @@ Also while in connection mode, you may select components from the drop-down menu
 
 Finally, you can display the bounding boxes for the different components in the skeleton through the corresponding checkbox.  This again can serve as a visual cue to help narrow in on missing connections
 
-Edge Removal and Splitting information -
+#### Edge Removal and Splitting information ####
 	
-	There is a textbox in the removal panel entitled "Number of Edges Required to Disconnect" - this number will indicate the total number of edges that need to be removed from the skeleton in order to remove all loops.
+There is a textbox in the removal panel entitled "Number of Edges Required to Disconnect" - this number will indicate the total number of edges that need to be removed from the skeleton in order to remove all loops.
 
 #### Edge Removal Mode ####
 	
