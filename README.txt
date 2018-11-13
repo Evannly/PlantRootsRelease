@@ -1,13 +1,13 @@
-SOFTWARE SETUP
+# SOFTWARE SETUP
 
-Requirements...
+### Requirements ###
 
 Python 3.5		
 PYQT5 (directions for installation of pyqt5 found here... http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
 
 
 
-Running the software
+### Running the software ###
 
 Once python is set up with pyqt5, you may launch the program by navigating to this directory within your python environment, and calling the command
 
@@ -17,7 +17,7 @@ python UI_Manager.py
 Assuming that PYQT5 is properly installed, and all of the files in this repo are present, the program should launch.
 
 
-Use
+### Usage ###
 
 Loading and saving root skeletons, as well as loading mesh files can be managed from the File menu on the top left.  The remaining options in the toolbar menus are currently either deprecated or disabled.
 
@@ -25,7 +25,7 @@ Once loaded, the panels flanking the screen can be used to respectively alter vi
 
 
 
-Visualization Options
+#### Visualization Options ####
 
 The viewing options are broken into how Nodes (junctions or endpoints of roots in the skeleton), Edges (collections of edges branching between junctions and endpoints), and the Mesh (if it is loaded) are viewed.
 
@@ -40,11 +40,11 @@ The Mesh can be loaded, and its color and transparency adjusted in the "Mesh Vis
 
 
 
-Editing Operations
+#### Editing Operations ####
 
 There are 3 different modes of editing operations: Connection, Edge Removal, and Edge Splitting.  In order to edit the skeleton, you will need to click the button corresponding to the desired mode, and then make selections of nodes or edges in the skeleton view corresponding to the edits you would like to make.  There is currently NO visual indicator of what the current mode (if any) is.  This should change in the near future, but if you are unsure what mode you are in, you may simply click the button for the mode you desire.
 
-Connection Mode-
+#### Connection Mode ####
 
 	While in connection mode, you may select nodes in the skeleton/graph view by clicking on them.  You may only select nodes which belong to different connected components.  If the existing endpoints or junctions that exist in the graph visualization do not correspond to where you would like to make a connection (eg. there is a connection missing at the branching point of a root), you may select any of the underlying vertices on the skeleton by clicking near them.  Once one node is selected each upon two separate components, you may click the "Accept Connection" button to create a new edge between those nodes.
 
@@ -56,7 +56,7 @@ Edge Removal and Splitting information -
 	
 	There is a textbox in the removal panel entitled "Number of Edges Required to Disconnect" - this number will indicate the total number of edges that need to be removed from the skeleton in order to remove all loops.
 
-Edge Removal Mode -
+#### Edge Removal Mode ####
 	
 	While in edge removal mode, if you click on an edge in the skeleton, it should become highlighted in white, and scaled up.  If the selected edge is one that you would like to remove, you may then click the "Accept Removal" button, and it will be deleted from the graph.  This can be used to remove errant connections between nodes, abandoned edges etc.
 
