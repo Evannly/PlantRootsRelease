@@ -45,6 +45,8 @@ NoMode = 0
 ConnectionMode = 1
 BreakMode = 2
 SplitMode = 3
+RemoveComponentMode = 4
+SplitNodeMode = 5
 useArcball = True
 
 
@@ -533,6 +535,8 @@ class GLWidget(QtOpenGL.QGLWidget):
                     self.graph.selectBreakEdge(event.x(), self.height() - event.y())
                 elif self.currentMode == SplitMode:
                     self.graph.selectSplitEdge(event.x(), self.height() - event.y())
+                elif self.currentMode == RemoveComponentMode:
+                    self.graph.selectRemoveComponentEdge(event.x(), self.height() - event.y())
 
             self.isMouseLeftDown = False
             self.doStopRotation = True

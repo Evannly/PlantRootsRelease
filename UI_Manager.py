@@ -5,6 +5,9 @@ Created on Tue Nov 28 02:48:14 2017
 @author: Will
 """
 
+# from RootsTool import Point3d, RootAttributes, Skeleton, mgraph
+import sys
+sys.path.append('E:/python')
 from RootsTool import Point3d, RootAttributes, Skeleton, mgraph
 #MetaNode3d, MetaEdge3d, MetaGraph,
 
@@ -35,7 +38,7 @@ NoMode = 0
 ConnectionMode = 1
 BreakMode = 2
 SplitEdgeMode = 3
-RemoveComponent = 4
+RemoveComponentMode = 4
 SplitNodeMode = 5
 
 
@@ -493,8 +496,7 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
 
     @pyqtSlot(bool)
     def removeComponentPressed(self, pressed: bool):
-        # messagebox.showinfo("Error", "Ops. Removing component in construction")
-        self.changeMode(RemoveComponent)
+        self.changeMode(RemoveComponentMode)
 
     @pyqtSlot(bool)
     def splitEdgeModePressed(self, pressed : bool):
@@ -524,11 +526,11 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
                 self.graph.splitOperation()
                 self.updateWidget()
         # add code to c++
-        if self.mode == RemoveComponent:
+        if self.mode == RemoveComponentMode:
             if self.graph != None:
-                print('Ops. Removing component in construction')
-        #         self.graph.RemoveComponentOperation()
-        #         self.updateWidget()
+                print('enter c++ for remove component')
+                self.graph.removeComponentOperation()
+                self.updateWidget()
         if self.mode == SplitNodeMode:
             if self.graph != None:
                 print('Ops. Splitting node in construction')
@@ -656,6 +658,9 @@ class RootsTabbedProgram(QMainWindow):
         if tabPos == 3:
             self.enterSplitMode()
             pass
+        if tabPos == 4:
+            self.enterRemoveComponentMode()
+            pass
 
     def __init__(self, parent = None):
         super(RootsTabbedProgram, self).__init__(parent)
@@ -716,8 +721,7 @@ class RootsTabbedProgram(QMainWindow):
         breakModeButton.setStatusTip('Break invalid edges')
         breakModeButton.triggered.connect(self.enterBreakMode)
         self.modeMenu.addAction(breakModeButton)
-        
-        
+
         splitModeButton = QAction('Split', self)
         splitModeButton.setShortcut('Ctrl+X')
         splitModeButton.setShortcutContext(Qt.ApplicationShortcut)
@@ -725,6 +729,12 @@ class RootsTabbedProgram(QMainWindow):
         splitModeButton.triggered.connect(self.enterSplitMode)
         self.modeMenu.addAction(splitModeButton)
 
+        RemoveComponentButton = QAction('RemoveComponent', self)
+        RemoveComponentButton.setShortcut('Ctrl+R')
+        RemoveComponentButton.setShortcutContext(Qt.ApplicationShortcut)
+        RemoveComponentButton.setStatusTip('Remove entire component of selected edge')
+        RemoveComponentButton.triggered.connect(self.enterRemoveComponentMode)
+        self.modeMenu.addAction(RemoveComponentButton)
 
         self.viewMenu = self.mainMenu.addMenu('View Mode')
 
@@ -855,6 +865,13 @@ class RootsTabbedProgram(QMainWindow):
         self.currentMode = SplitEdgeMode
         self.tabWidget.setCurrentIndex(3)
         self.glwidget.enterSplitMode(self.SplitTab)
+
+    def enterRemoveComponentMode(self):
+        if self.currentMode == RemoveComponentMode or self.currentMode == -2:
+            return
+        self.currentMode = RemoveComponentMode
+        self.tabWidget.setCurrentIndex(4)
+        self.glwidget.enterRemoveComponentMode(self.SplitTab)
 
     # def enterAddNodeMode(self):
     #     if self.currentMode == 3:
