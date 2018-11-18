@@ -1,13 +1,13 @@
 # SOFTWARE SETUP
 
-### Requirements ###
+## Requirements ##
 
 Python 3.5		
 PYQT5 (directions for installation of pyqt5 found here... http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
 
 
 
-### Running the software ###
+## Running the software ##
 
 Once python is set up with pyqt5, you may launch the program by navigating to this directory within your python environment, and calling the command
 
@@ -17,7 +17,7 @@ python UI_Manager.py
 Assuming that PYQT5 is properly installed, and all of the files in this repo are present, the program should launch.
 
 
-### Usage ###
+## Usage ##
 
 Loading and saving root skeletons, as well as loading mesh files can be managed from the File menu on the top left.  The remaining options in the toolbar menus are currently either deprecated or disabled.
 
@@ -25,7 +25,7 @@ Once loaded, the panels flanking the screen can be used to respectively alter vi
 
 
 
-#### Visualization Options ####
+### Visualization Options ###
 
 The viewing options are broken into how Nodes (junctions or endpoints of roots in the skeleton), Edges (collections of edges branching between junctions and endpoints), and the Mesh (if it is loaded) are viewed.
 
@@ -40,7 +40,7 @@ The Mesh can be loaded, and its color and transparency adjusted in the "Mesh Vis
 
 
 
-#### Editing Operations ####
+### Editing Operations ###
 
 There are 3 different modes of editing operations: Connection, Edge Removal, and Edge Splitting.  In order to edit the skeleton, you will need to click the button corresponding to the desired mode, and then make selections of nodes or edges in the skeleton view corresponding to the edits you would like to make.  There is currently NO visual indicator of what the current mode (if any) is.  This should change in the near future, but if you are unsure what mode you are in, you may simply click the button for the mode you desire.
 
@@ -52,9 +52,9 @@ Also while in connection mode, you may select components from the drop-down menu
 
 Finally, you can display the bounding boxes for the different components in the skeleton through the corresponding checkbox.  This again can serve as a visual cue to help narrow in on missing connections
 
-#### Edge Removal and Splitting information ####
+- Edge Removal and Splitting information
 	
-There is a textbox in the removal panel entitled "Number of Edges Required to Disconnect" - this number will indicate the total number of edges that need to be removed from the skeleton in order to remove all loops.
+  There is a textbox in the removal panel entitled "Number of Edges Required to Disconnect" - this number will indicate the total number of edges that need to be removed from the skeleton in order to remove all loops.
 
 #### Edge Removal Mode ####
 	
@@ -86,3 +86,7 @@ and can be used to split the merged middle edge so that you have two separate pa
     |    |
 
 To accomplish this, while in the edge splitting mode, you will first select the center edge that you would like to split (which will highlight it in white), and then select the two or more edges coming out of that central edge that correspond to a single root.  Eg. in the above scenario, you might first click the center edge, and then the edge on the top right, and then the edge on the bottom right.  Once the set of edges that go together to form a single root are selected, you can click the "Accept Removal" operation to perform the operation.
+
+#### Node Splitting Mode ####
+
+TBC
