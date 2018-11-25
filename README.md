@@ -16,9 +16,9 @@ pip install pyqt5-tools
 ## Running the software ##
 
 Once python is set up with pyqt5, you may launch the program by navigating to this directory within your python environment, and calling the command
-
+```
 python UI_Manager.py
-
+```
 
 Assuming that PYQT5 is properly installed, and all of the files in this repo are present, the program should launch.
 
