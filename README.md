@@ -4,7 +4,7 @@
 
 Windows OS, Python 3.5 64 bit
 
-PYQT5 (directions for installation of pyqt5 found here... http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+PYQT5 (directions for installation of pyqt5 found [here](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
 
 Alternatively using pip
 ```
