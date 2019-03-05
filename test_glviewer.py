@@ -2,7 +2,7 @@ import sys
 import math
 
 from Arcball import ArcballCamera, arcVec
-
+sys.path.append('E:/python')
 from RootsTool import IssuesGL, VBOSphere
 # from ConnectionTabWidget import Ui_ConnectionTabWidget
 # from BreakTabWidget import Ui_BreakTabWidget
@@ -47,6 +47,10 @@ BreakMode = 2
 SplitMode = 3
 RemoveComponentMode = 4
 SplitNodeMode = 5
+SelectStemMode = 6
+SelectPrimaryNodesMode = 7
+SelectPrimaryBranchesMode = 8
+SelectSegmentPointMode = 9
 useArcball = True
 
 
@@ -66,6 +70,10 @@ class GLWidget(QtOpenGL.QGLWidget):
     def loadFileEvent(self, filename : str):
         self.graph.loadFromFile(filename)
         self.recenter = self.recenter()
+
+    @pyqtSlot(str)
+    def loadTraitsFileEvent(self, filename : str):
+        self.graph.loadTraitsFromFile(filename)
 
     @pyqtSlot(int, int)
     def acceptConnection(self, v0id, v1id):
@@ -198,8 +206,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.arcball = ArcballCamera()
         
 
-
-
         self.doStopRotation = False
 
         
@@ -277,8 +283,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         
-
-        
         pos = self.camera.get_position()
         up = self.camera.get_world_up()
         self.camera.look_at(self.camera.viewCenter)
@@ -296,28 +300,24 @@ class GLWidget(QtOpenGL.QGLWidget):
         # gluLookAt(pos[0], pos[1], pos[2], lpos[0], lpos[1], lpos[2], up[0], up[1], up[2])
         # self.arcball.rotate()
 
-
-
         lightpos = pos
         color = (1.0, 0.0, 1.0, 1.0)
 
         
         if not useArcball:
             gluLookAt(pos[0], pos[1], pos[2], lpos[0], lpos[1], lpos[2], up[0], up[1], up[2])
-        
 
-        
-        
-        glPushMatrix();
-        
+        glPushMatrix()
         self.graph.draw()
-        
         ldir /= np.linalg.norm(ldir)
-       
-        glPopMatrix()
         glPopMatrix()
 
-        
+        # glPushMatrix()
+        # self.graph.drawBox()
+        # glPopMatrix()
+
+        glPopMatrix()
+
  
         
     def resizeGL(self, width : int, height : int):
@@ -537,6 +537,14 @@ class GLWidget(QtOpenGL.QGLWidget):
                     self.graph.selectSplitEdge(event.x(), self.height() - event.y())
                 elif self.currentMode == RemoveComponentMode:
                     self.graph.selectRemoveComponentEdge(event.x(), self.height() - event.y())
+                elif self.currentMode == SelectStemMode:
+                    self.graph.selectStemStartEnd(event.x(), self.height() - event.y())
+                elif self.currentMode == SelectPrimaryNodesMode:
+                    self.graph.selectStemPrimaryNode(event.x(), self.height() - event.y())
+                elif self.currentMode == SelectPrimaryBranchesMode:
+                    self.graph.selectPrimaryBranches(event.x(), self.height() - event.y())
+                elif self.currentMode == SelectSegmentPointMode:
+                    self.graph.selectSegmentPointAction(event.x(), self.height() - event.y())
 
             self.isMouseLeftDown = False
             self.doStopRotation = True

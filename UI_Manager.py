@@ -20,8 +20,9 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5 import QtWidgets
 
 import sys
-from EditingTabWidget import Ui_EditingTabWidget
 from VisualizationTabWidget import Ui_VisualizationTabWidget
+from EditingTabWidget import Ui_EditingTabWidget
+from TraitsTabWidget import Ui_TraitsTabWidget
 
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -41,6 +42,10 @@ SplitEdgeMode = 3
 RemoveComponentMode = 4
 SplitNodeMode = 5
 
+SelectStemMode = 6
+SelectPrimaryNodesMode = 7
+SelectPrimaryBranchesMode = 8
+SelectSegmentPointMode = 9
 
 def getColorList(size, colormap):
     colorList = []
@@ -137,7 +142,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         scale = 1.0 * sliderVal / 10.0
         scale = max(scale, 1.0)
         self.graph.setEdgeScale(scale)
-
 
     @pyqtSlot()
     def edgeColorFloorChanged(self):
@@ -510,12 +514,6 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         #    self.modeChangeSig.emit(self.mode)
 
     @pyqtSlot(bool)
-    def splitNodeModePressed(self, pressed: bool):
-        # messagebox.showinfo("Error", "Ops. Splitting node in construction")
-        self.changeMode(SplitNodeMode)
-
-
-    @pyqtSlot(bool)
     def acceptRemovalPressed(self, pressed : bool):
         if self.mode == BreakMode:
             if self.graph != None:
@@ -536,7 +534,6 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
                 print('Ops. Splitting node in construction')
         #         self.graph.splitNodeOperation()
         #         self.updateWidget()
-
 
     def __init__(self, graphObject : mgraph, widget=None):
         Ui_EditingTabWidget.__init__(self)
@@ -560,8 +557,7 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         self.SplitModeButton.clicked.connect(self.splitEdgeModePressed)
         self.AcceptRemovalButton.clicked.connect(self.acceptRemovalPressed)
         self.RemoveComponentButton.clicked.connect(self.removeComponentPressed)
-        self.SplitModeButton_Node.clicked.connect(self.splitNodeModePressed)
-
+        # self.SplitModeButton_Node.clicked.connect(self.splitNodeModePressed)
 
     def changeMode(self, mode : int):
         if self.mode != mode:
@@ -576,6 +572,15 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
                 if mode == ConnectionMode:
                     self.graph.setDisplayOnlySelectedComponents(self.showSelected)
                     self.graph.setShowBoundingBoxes(self.showBoxes)
+                # if mode == SelectPrimaryNodesMode \
+                #         or mode == SelectPrimaryBranchesMode \
+                #         or mode == SelectStemMode \
+                #         or mode == SelectSegmentPointMode:
+                #     self.graph.setDisplayStem(self.showStem)
+                #     self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
+                # else:
+                self.graph.setDisplayStem(False)
+                self.graph.setDisplayPrimaryNodes(False)
             self.modeChangeSig.emit(self.mode)
 
     def exitCurrentMode(self):
@@ -588,6 +593,7 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         if self.mode == ConnectionMode and self.graph != None:
             self.graph.setDisplayOnlySelectedComponents(self.showSelected)
             self.graph.setShowBoundingBoxes(self.showBoxes)
+
 
     def updateWidget(self):
         if self.graph != None:
@@ -619,11 +625,246 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         
             self.ComponentOne.currentIndexChanged.connect(self.componentOneChanged)
             self.ComponentTwo.currentIndexChanged.connect(self.componentTwoChanged)
+
         else:
             self.edgesToBreak.setText("")
             self.ComponentOne.clear()
             self.ComponentTwo.clear()
         
+class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
+    modeChangeSig = pyqtSignal(int)
+    loadTraitsSig = pyqtSignal()
+    saveTraitsSig = pyqtSignal()
+
+    @pyqtSlot(bool)
+    def loadTraitsPressed(self, pressed : bool):
+        self.changeMode(SelectPrimaryBranchesMode)
+        self.loadTraitsSig.emit()
+        self.updateWidget()
+
+    @pyqtSlot(bool)
+    def saveTraitsPressed(self, pressed : bool):
+        self.saveTraitsSig.emit()
+
+    @pyqtSlot(bool)
+    def showStemChecked(self, doShow : bool):
+        self.showStem = doShow
+        if self.graph != None:
+                self.graph.setDisplayStem(self.showStem)
+
+    @pyqtSlot(bool)
+    def selectStemPressed(self, pressed : bool):
+        self.changeMode(SelectStemMode)
+
+    @pyqtSlot(bool)
+    def confirmStemPressed(self, pressed : bool):
+        if self.mode == SelectStemMode and self.graph:
+            self.graph.selectStemOperation()
+            self.updateWidget()
+
+    # @pyqtSlot(bool)
+    # def acceptTraitSelectionPressed(self, pressed : bool):
+    #     if self.mode == SelectStemMode:
+    #         if self.graph:
+    #             self.graph.selectStemOperation()
+    #             self.updateWidget()
+    #     if self.mode == SelectStemNodeMode:
+    #         if self.graph:
+    #             self.graph.selectStemPrimaryNodeOperation()
+    #             self.updateWidget()
+    #     if self.mode == SelectPrimaryEdgesMode:
+    #         if self.graph:
+    #             self.graph.selectPrimaryEdgesOperation()
+    #             self.updateWidget()
+
+    @pyqtSlot(bool)
+    def showPrimaryNodesChecked(self, doShow : bool):
+        self.showPrimaryNodes = doShow
+        if self.graph != None:
+            self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
+
+    @pyqtSlot(bool)
+    def randomColorizePrimaryNodesChecked(self, pressed : bool):
+        self.isRandomColorizePrimaryNodes = pressed
+        if self.graph != None:
+            self.graph.setRandomColorizePrimaryNodes(self.isRandomColorizePrimaryNodes)
+            self.updateWidget()
+
+    @pyqtSlot(bool)
+    def selectStemPrimaryNodePressed(self, pressed : bool):
+        self.changeMode(SelectPrimaryNodesMode)
+
+    @pyqtSlot(bool)
+    def confirmPrimaryNodesPressed(self, pressed : bool):
+        if self.mode == SelectPrimaryNodesMode and self.graph:
+            self.graph.selectStemPrimaryNodeOperation()
+            self.updateWidget()
+
+    @pyqtSlot(int)
+    def currentPrimaryNodeChanged(self, node : int):
+        self.currentPrimaryNode = node
+        if self.graph != None:
+            self.graph.setCurrentPrimaryNode(node)
+
+    @pyqtSlot(bool)
+    def selectPrimaryBranchesPressed(self, pressed : bool):
+        self.changeMode(SelectPrimaryBranchesMode)
+
+    @pyqtSlot(bool)
+    def confirmPrimaryBranchesPressed(self, pressed : bool):
+        if self.mode == SelectPrimaryBranchesMode and self.graph:
+            self.graph.selectPrimaryBranchesOperation()
+            self.updateWidget()
+
+    @pyqtSlot(bool)
+    def PrimaryNodeSelectionColorPressed(self, active):
+        pickedColor = QtWidgets.QColorDialog.getColor(self.currentPrimaryNodeSelectionColor, self.widget)
+        self.graph.setCurrentPrimaryNodeSelectionColor(pickedColor.redF(), pickedColor.greenF(), pickedColor.blueF())
+        self.currentPrimaryNodeSelectionColor = pickedColor
+
+    @pyqtSlot(bool)
+    def showConfirmedPrimaryBranchesChecked(self, doShow : bool):
+        self.showConfirmedPrimaryBranches = doShow
+        if self.mode == SelectPrimaryBranchesMode:
+            if self.graph != None:
+                self.graph.setDisplayConfirmedPrimaryBranches(self.showConfirmedPrimaryBranches)
+
+    @pyqtSlot(bool)
+    def showOnlyBranchesOfCurrentPrimaryNodeChecked(self, doShow : bool):
+        self.showOnlyBranchesOfCurrentPrimaryNode = doShow
+        if self.mode == SelectPrimaryBranchesMode and self.graph != None:
+            self.graph.setDisplayOnlyBranchesOfCurrentPrimaryNode(self.showOnlyBranchesOfCurrentPrimaryNode)
+
+    @pyqtSlot(bool)
+    def showTraitsOnlyChecked(self, doShow : bool):
+        self.showTraitsOnly = doShow
+        if self.graph != None:
+            self.graph.setDisplayTraitsOnly(self.showTraitsOnly)
+
+    @pyqtSlot(bool)
+    def SelectSegmentPointPressed(self, pressed : bool):
+        self.changeMode(SelectSegmentPointMode)
+
+    @pyqtSlot(bool)
+    def ConfirmSegmentPointPressed(self):
+        if self.mode == SelectSegmentPointMode and self.graph:
+            self.graph.selectSegmentPointOperation()
+            self.updateWidget()
+
+    @pyqtSlot(bool)
+    def showSelectedSegmentChecked(self, doShow : bool):
+        self.showSelectedSegment = doShow
+        if self.graph != None:
+            self.graph.setDisplaySelectedSegment(self.showSelectedSegment)
+
+
+    def __init__(self, graphObject: mgraph, widget=None):
+        Ui_TraitsTabWidget.__init__(self)
+        QObject.__init__(self)
+        self.setupUi(widget)
+        self.widget = widget
+        self.graph = graphObject
+        self.mode = NoMode
+        self.showStem = False
+        self.showPrimaryNodes = False
+        self.currentPrimaryNode = 0
+        self.showConfirmedPrimaryBranches = False
+        self.isRandomColorizePrimaryNodes = False
+        self.showOnlyBranchesOfCurrentPrimaryNode = False
+        self.showSelectedSegment = False
+        self.showTraitsOnly = False
+
+        self.currentPrimaryNodeSelectionColor = QColor(255, 255, 255)
+        self.graph.setCurrentPrimaryNodeSelectionColor(self.currentPrimaryNodeSelectionColor.redF(),
+                                                       self.currentPrimaryNodeSelectionColor.greenF(),
+                                                       self.currentPrimaryNodeSelectionColor.blueF())
+
+        self.loadTraitsButton.clicked.connect(self.loadTraitsPressed)
+        self.saveTraitsButton.clicked.connect(self.saveTraitsPressed)
+
+        # self.AcceptTraitSelectionButton.clicked.connect(self.acceptTraitSelectionPressed)
+        self.showStemCheck.toggled.connect(self.showStemChecked)
+        self.SelectStemButton.clicked.connect(self.selectStemPressed)
+        self.ConfirmStemButton.clicked.connect(self.confirmStemPressed)
+
+        self.showPrimaryNodesCheck.toggled.connect(self.showPrimaryNodesChecked)
+        self.SelectPriamryNodeButton.clicked.connect(self.selectStemPrimaryNodePressed)
+        self.ConfirmPrimaryNodesButton.clicked.connect(self.confirmPrimaryNodesPressed)
+
+        self.PrimaryNodeSelectionColorButton.clicked.connect(self.PrimaryNodeSelectionColorPressed)
+        self.RandomColorizePrimaryNodesCheck.toggled.connect(self.randomColorizePrimaryNodesChecked)
+
+        self.CurrentPrimaryNodeCombo.currentIndexChanged.connect(self.currentPrimaryNodeChanged)
+        self.SelectPrimaryBranchesButton.clicked.connect(self.selectPrimaryBranchesPressed)
+        self.ConfirmPrimaryBranchesButton.clicked.connect(self.confirmPrimaryBranchesPressed)
+        self.showConfirmedPrimaryBranchesCheck.toggled.connect(self.showConfirmedPrimaryBranchesChecked)
+        self.showOnlyBranchesOfCurrentPrimaryNodeCheck.toggled.connect(self.showOnlyBranchesOfCurrentPrimaryNodeChecked)
+        self.showTraitsOnlyCheck.toggled.connect(self.showTraitsOnlyChecked)
+
+        self.SelectSegmentPointButton.clicked.connect(self.SelectSegmentPointPressed)
+        self.ConfirmSegmentPointButton.clicked.connect(self.ConfirmSegmentPointPressed)
+        self.showSelectedSegmentCheck.toggled.connect(self.showSelectedSegmentChecked)
+
+    def changeMode(self, mode : int):
+        if self.mode != mode:
+            self.mode = mode
+            print("changing mode")
+            if self.graph != None:
+                self.graph.unselectAll()
+                self.updateWidget()
+                if mode != ConnectionMode:
+                    self.graph.setDisplayOnlySelectedComponents(False)
+                    self.graph.setShowBoundingBoxes(False)
+                if mode == ConnectionMode:
+                    self.graph.setDisplayOnlySelectedComponents(self.showSelected)
+                    self.graph.setShowBoundingBoxes(self.showBoxes)
+                if mode != ConnectionMode and mode != SplitEdgeMode \
+                        and mode != BreakMode \
+                        and mode != RemoveComponentMode:
+                    self.graph.setDisplayStem(self.showStem)
+                    self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
+                else:
+                    self.graph.setDisplayStem(False)
+                    self.graph.setDisplayPrimaryNodes(False)
+            self.modeChangeSig.emit(self.mode)
+
+    def exitCurrentMode(self):
+        pass
+
+    def setGraph(self, graph : mgraph):
+        print("setting graph")
+        self.graph = graph
+        self.updateWidget()
+        if self.graph != None:
+            if self.mode != ConnectionMode and self.mode != SplitEdgeMode \
+                    and self.mode != BreakMode \
+                    and self.mode != RemoveComponentMode:
+                self.graph.setDisplayStem(self.showStem)
+                self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
+            else:
+                self.graph.setDisplayStem(False)
+                self.graph.setDisplayPrimaryNodes(False)
+
+    def updateWidget(self):
+        if self.graph != None:
+            # update node combo
+            self.CurrentPrimaryNodeCombo.currentIndexChanged.disconnect(self.currentPrimaryNodeChanged)
+            self.CurrentPrimaryNodeCombo.clear()
+            numPrimaryNodes = self.graph.getNumPrimaryNodes()
+            for i in range(0, numPrimaryNodes):
+                descriptor = str(i)
+                self.CurrentPrimaryNodeCombo.addItem(descriptor)
+
+            self.currentPrimaryNode = max(self.currentPrimaryNode, 0)
+            self.currentPrimaryNode = min(self.currentPrimaryNode, numPrimaryNodes - 1)
+
+            self.CurrentPrimaryNodeCombo.setCurrentIndex(self.currentPrimaryNode)
+            self.graph.setCurrentPrimaryNode(self.currentPrimaryNode)
+            self.CurrentPrimaryNodeCombo.currentIndexChanged.connect(self.currentPrimaryNodeChanged)
+
+        else:
+            self.edgesToBreak.setText("")
+            self.CurrentPrimaryNodeCombo.clear()
 
 class RootsTabbedProgram(QMainWindow):
     
@@ -661,6 +902,15 @@ class RootsTabbedProgram(QMainWindow):
         if tabPos == 4:
             self.enterRemoveComponentMode()
             pass
+        if tabPos == 6:
+            self.enterSelectStemMode()
+            pass
+        if tabPos == 7:
+            self.enterSelectStemPrimaryNodeMode()
+            pass
+        if tabPos == 8:
+            self.enterSelectPrimaryBranchesMode()
+            pass
 
     def __init__(self, parent = None):
         super(RootsTabbedProgram, self).__init__(parent)
@@ -697,7 +947,17 @@ class RootsTabbedProgram(QMainWindow):
         saveButton.setStatusTip('Save rootfile')
         saveButton.triggered.connect(self.saveFile)
         self.fileMenu.addAction(saveButton)
-        
+
+        loadTraitsButton = QAction('Load traits', self)
+        loadTraitsButton.triggered.connect(self.loadTraitsFile)
+        self.fileMenu.addAction(loadTraitsButton)
+
+        saveTraitsButton = QAction('Save traits', self)
+        saveTraitsButton.setShortcut('Ctrl+A')
+        saveTraitsButton.setShortcutContext(Qt.ApplicationShortcut)
+        saveTraitsButton.setStatusTip('Save traits')
+        saveTraitsButton.triggered.connect(self.saveTraitsFile)
+        self.fileMenu.addAction(saveTraitsButton)
         
         exitButton = QAction('Exit', self)
         exitButton.setShortcut('Ctrl+E')
@@ -735,6 +995,23 @@ class RootsTabbedProgram(QMainWindow):
         RemoveComponentButton.setStatusTip('Remove entire component of selected edge')
         RemoveComponentButton.triggered.connect(self.enterRemoveComponentMode)
         self.modeMenu.addAction(RemoveComponentButton)
+
+        SelectStemButton = QAction('Stem', self)
+        SelectStemButton.setShortcut('Ctrl+Shift+S')
+        SelectStemButton.setShortcutContext(Qt.ApplicationShortcut)
+        SelectStemButton.setStatusTip('Select two end node of a stem')
+        SelectStemButton.triggered.connect(self.enterSelectStemMode)
+        self.modeMenu.addAction(SelectStemButton)
+
+        SelectPriamryNodeButton = QAction('Primary Nodes', self)
+        SelectPriamryNodeButton.setStatusTip('Select lists of primary nodes')
+        SelectPriamryNodeButton.triggered.connect(self.enterSelectStemPrimaryNodeMode)
+        self.modeMenu.addAction(SelectPriamryNodeButton)
+
+        SelectPrimaryBranchesButton = QAction('Primary Edges', self)
+        SelectPrimaryBranchesButton.setStatusTip('Select lists of primary edges')
+        SelectPrimaryBranchesButton.triggered.connect(self.enterSelectPrimaryBranchesMode)
+        self.modeMenu.addAction(SelectPrimaryBranchesButton)
 
         self.viewMenu = self.mainMenu.addMenu('View Mode')
 
@@ -804,9 +1081,12 @@ class RootsTabbedProgram(QMainWindow):
         self.tabWidget.addTab(widget, 'Editing')
         self.EditingTab.modeChangeSig.connect(self.switchModes)
 
-        #widget = QtWidgets.QWidget(self.tabWidget)
-        #self.ConnectionTab = ConnectionTabWidget(widget)
-        #self.tabWidget.addTab(widget, 'Connection')
+        widget = QtWidgets.QWidget(self.tabWidget)
+        self.TraitsTab = TraitsTabWidget(self.glwidget.graph, widget)
+        self.tabWidget.addTab(widget, 'Traits')
+        self.TraitsTab.modeChangeSig.connect(self.switchModes)
+        self.TraitsTab.loadTraitsSig.connect(self.loadTraitsFile)
+        self.TraitsTab.saveTraitsSig.connect(self.saveTraitsFile)
         
         #widget = QtWidgets.QWidget(self.tabWidget)
         #self.BreakTab = BreakTabWidget(widget)
@@ -849,7 +1129,7 @@ class RootsTabbedProgram(QMainWindow):
             return
         self.currentMode = ConnectionMode
         self.tabWidget.setCurrentIndex(1)
-        self.glwidget.enterConnectionMode(self.ConnectionTab)
+        # self.glwidget.enterConnectionMode(self.ConnectionTab)
 
     
     def enterBreakMode(self):
@@ -857,21 +1137,42 @@ class RootsTabbedProgram(QMainWindow):
             return
         self.currentMode = BreakMode
         self.tabWidget.setCurrentIndex(2)
-        self.glwidget.enterBreakMode(self.BreakTab)
+        # self.glwidget.enterBreakMode(self.BreakTab)
         
     def enterSplitMode(self):
         if self.currentMode == SplitEdgeMode or self.currentMode == -2:
             return
         self.currentMode = SplitEdgeMode
         self.tabWidget.setCurrentIndex(3)
-        self.glwidget.enterSplitMode(self.SplitTab)
+        # self.glwidget.enterSplitMode(self.SplitTab)
 
     def enterRemoveComponentMode(self):
         if self.currentMode == RemoveComponentMode or self.currentMode == -2:
             return
         self.currentMode = RemoveComponentMode
         self.tabWidget.setCurrentIndex(4)
-        self.glwidget.enterRemoveComponentMode(self.SplitTab)
+        # self.glwidget.enterRemoveComponentMode(self.SplitTab)
+
+    def enterSelectStemMode(self):
+        if self.currentMode == SelectStemMode or self.currentMode == -2:
+            return
+        print("Enter select stem mode 903")
+        self.currentMode = SelectStemMode
+        self.tabWidget.setCurrentIndex(6)
+        # self.glwidget.enterSelectStemMode(self.)
+
+    def enterSelectStemPrimaryNodeMode(self):
+        if self.currentMode == SelectPrimaryNodesMode or self.currentMode == -2:
+            return
+        self.currentMode = SelectPrimaryNodesMode
+        self.tabWidget.setCurrentIndex(7)
+
+    def enterSelectPrimaryBranchesMode(self):
+        if self.currentMode == -2:
+            return
+        print("Enter select primary edges mode")
+        self.currentMode = SelectPrimaryBranchesMode
+        self.tabWidget.setCurrentIndex(8)
 
     # def enterAddNodeMode(self):
     #     if self.currentMode == 3:
@@ -917,6 +1218,7 @@ class RootsTabbedProgram(QMainWindow):
         if self.loadFileName[0] != "":
             self.glwidget.loadFileEvent(str(self.loadFileName[0]))
             self.EditingTab.setGraph(self.glwidget.graph)
+            self.TraitsTab.setGraph(self.glwidget.graph)
             #self.currentMode = -1
             #self.metaThread.loadFileEvent(str(self.loadFileName[0]))
     def loadMesh(self):
@@ -935,6 +1237,24 @@ class RootsTabbedProgram(QMainWindow):
 
         if self.saveFileName[0] != "":
             self.glwidget.graph.saveToFile(self.saveFileName[0])
+
+    def loadTraitsFile(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.loadFileName = QFileDialog.getOpenFileName(self, 'Open File', "")
+
+        if self.loadFileName[0] != "":
+            self.glwidget.loadTraitsFileEvent(str(self.loadFileName[0]))
+            # self.EditingTab.setGraph(self.glwidget.graph)
+            # self.TraitsTab.setGraph(self.glwidget.graph)
+
+    def saveTraitsFile(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.saveFileName = QFileDialog.getSaveFileName(self, 'Save File', filter="ply(*.ply)")
+
+        if self.saveFileName[0] != "":
+            self.glwidget.graph.saveTraitsToFile(self.saveFileName[0])
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
