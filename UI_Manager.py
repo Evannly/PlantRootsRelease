@@ -704,7 +704,7 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def currentPrimaryNodeChanged(self, node : int):
         self.currentPrimaryNode = node
         if self.graph != None:
-            self.graph.setCurrentPrimaryNode(node)
+            self.graph.setCurrentPrimaryNode(self.currentPrimaryNode)
 
     @pyqtSlot(bool)
     def selectPrimaryBranchesPressed(self, pressed : bool):
@@ -714,6 +714,12 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def confirmPrimaryBranchesPressed(self, pressed : bool):
         if self.mode == SelectPrimaryBranchesMode and self.graph:
             self.graph.selectPrimaryBranchesOperation()
+            self.updateWidget()
+
+    @pyqtSlot(bool)
+    def removePrimaryBranchesPressed(self, pressed: bool):
+        if self.mode == SelectPrimaryBranchesMode and self.graph:
+            self.graph.RemovePrimaryBranchesOperation()
             self.updateWidget()
 
     @pyqtSlot(bool)
@@ -757,6 +763,12 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         if self.graph != None:
             self.graph.setDisplaySelectedSegment(self.showSelectedSegment)
 
+    @pyqtSlot()
+    def horizontalSliderRadiusChanged(self):
+        sliderVal = self.horizontalSliderRadius.value()
+        # floor = 1.0 * sliderVal / 100.0
+        if not self.horizontalSliderRadius.isSliderDown():
+            self.graph.setSegmentHorizontalSliderRadius(sliderVal)
 
     def __init__(self, graphObject: mgraph, widget=None):
         Ui_TraitsTabWidget.__init__(self)
@@ -797,6 +809,7 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.CurrentPrimaryNodeCombo.currentIndexChanged.connect(self.currentPrimaryNodeChanged)
         self.SelectPrimaryBranchesButton.clicked.connect(self.selectPrimaryBranchesPressed)
         self.ConfirmPrimaryBranchesButton.clicked.connect(self.confirmPrimaryBranchesPressed)
+        self.RemovePrimaryBranchesButton.clicked.connect(self.removePrimaryBranchesPressed)
         self.showConfirmedPrimaryBranchesCheck.toggled.connect(self.showConfirmedPrimaryBranchesChecked)
         self.showOnlyBranchesOfCurrentPrimaryNodeCheck.toggled.connect(self.showOnlyBranchesOfCurrentPrimaryNodeChecked)
         self.showTraitsOnlyCheck.toggled.connect(self.showTraitsOnlyChecked)
@@ -804,6 +817,11 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.SelectSegmentPointButton.clicked.connect(self.SelectSegmentPointPressed)
         self.ConfirmSegmentPointButton.clicked.connect(self.ConfirmSegmentPointPressed)
         self.showSelectedSegmentCheck.toggled.connect(self.showSelectedSegmentChecked)
+
+        self.horizontalSliderRadius.sliderReleased.connect(self.horizontalSliderRadiusChanged)
+        self.horizontalSliderRadius.setSliderDown(True)
+        self.horizontalSliderRadius.setValue(10)
+        self.horizontalSliderRadius.setSliderDown(False)
 
     def changeMode(self, mode : int):
         if self.mode != mode:
