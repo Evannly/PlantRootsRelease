@@ -46,11 +46,13 @@ ConnectionMode = 1
 BreakMode = 2
 SplitMode = 3
 RemoveComponentMode = 4
-SplitNodeMode = 5
+
 SelectStemMode = 6
 SelectPrimaryNodesMode = 7
 SelectPrimaryBranchesMode = 8
 SelectSegmentPointMode = 9
+
+ViewNodeInfoMode = 10
 useArcball = True
 
 
@@ -545,6 +547,8 @@ class GLWidget(QtOpenGL.QGLWidget):
                     self.graph.selectPrimaryBranches(event.x(), self.height() - event.y())
                 elif self.currentMode == SelectSegmentPointMode:
                     self.graph.selectSegmentPointAction(event.x(), self.height() - event.y())
+                elif self.currentMode == ViewNodeInfoMode:
+                    self.graph.viewNodeInfoAction(event.x(), self.height() - event.y())
 
             self.isMouseLeftDown = False
             self.doStopRotation = True
