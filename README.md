@@ -1,4 +1,4 @@
-# SOFTWARE SETUP
+# Software Setup
 
 ## Warning ##
  
