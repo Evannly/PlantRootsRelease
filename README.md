@@ -1,15 +1,24 @@
 # SOFTWARE SETUP
 
+## Warning ##
+ 
+If you haven't finished C++ code compilation, please navigate to https://github.com/chunyuan1/PlantRoot and finish the installation first.
+
 ## Requirements ##
 
-Windows OS, Python 3.5 64 bit
+Windows 10 64bit, Python 3.7.3 64bit
 
-PYQT5 (directions for installation of pyqt5 found [here](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+PYQT5 (directions for installation can be found [here](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+MatPlotLib (directions for installation can be found [here](https://matplotlib.org/downloads.html)
+PyOpenGL
 
-Alternatively using pip
+## Installation ##
+
+Using pip
 ```
-pip install pyqt5
-pip install pyqt5-tools
+pip3 install pyqt5 pyqt5-tools
+python -m pip install matplotlib
+pip3 install pyopengl
 ```
 
 
