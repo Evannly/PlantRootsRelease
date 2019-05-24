@@ -9,7 +9,9 @@ If you haven't finished C++ code compilation, please navigate to https://github.
 Windows 10 64bit, Python 3.7.3 64bit
 
 PYQT5 (directions for installation can be found [here](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+
 MatPlotLib (directions for installation can be found [here](https://matplotlib.org/downloads.html)
+
 PyOpenGL
 
 ## Installation ##
