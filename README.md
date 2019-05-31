@@ -1,4 +1,4 @@
-# SOFTWARE SETUP
+# Software Setup
 
 ## Warning ##
  
@@ -9,7 +9,9 @@ If you haven't finished C++ code compilation, please navigate to https://github.
 Windows 10 64bit, Python 3.7.3 64bit
 
 PYQT5 (directions for installation can be found [here](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+
 MatPlotLib (directions for installation can be found [here](https://matplotlib.org/downloads.html)
+
 PyOpenGL
 
 ## Installation ##
@@ -21,10 +23,11 @@ python -m pip install matplotlib
 pip3 install pyopengl
 ```
 
-
 ## Running the software ##
 
-Once python is set up with pyqt5, you may launch the program by navigating to this directory within your python environment, and calling the command
+Put the project folder (PlantRootsRelease) in the same directory as the C++ project (PlantRoot)
+
+Once python is set up with pyqt5, you may launch the program by calling the command
 ```
 python UI_Manager.py
 ```
@@ -44,7 +47,7 @@ Once loaded, the panels flanking the screen can be used to respectively alter vi
 
 The viewing options are broken into how Nodes (junctions or endpoints of roots in the skeleton), Edges (collections of edges branching between junctions and endpoints), and the Mesh (if it is loaded) are viewed.
 
-Nodes and Edges can be colored by their Thickness, Width, Ratio (Thickness/Width), and Connected Component (each component being one set of nodes and edges which are all interconnected), relative to the other nodes and edges in the skeleton.  Additionally, Nodes may be colored by their relative degree, or a single flat color.  To color the nodes or edges a certain manner, you must first select a parameter by which to color them, and a heatmap type from the dropdown menus.  The parameters for their relative colorings may be adjusted by using the "Color Cieling" and "Color Floor" sliders.  By adjusting the 'Floor' value up, any elements of the skeleton which fall below that relative ration along the chosen parameter will be clamped to the bottom end of the provided heatmap.  Similarly for the 'Cieling' selection.
+Nodes and Edges can be colored by their Thickness, Width, Ratio (Thickness/Width), and Connected Component (each component being one set of nodes and edges which are all interconnected), relative to the other nodes and edges in the skeleton.  Additionally, Nodes may be colored by their relative degree, or a single flat color.  To color the nodes or edges a certain manner, you must first select a parameter by which to color them, and a heatmap type from the dropdown menus.  The parameters for their relative colorings may be adjusted by using the "Color Ceiling" and "Color Floor" sliders.  By adjusting the 'Floor' value up, any elements of the skeleton which fall below that relative ration along the chosen parameter will be clamped to the bottom end of the provided heatmap.  Similarly for the 'Ceiling' selection.
 
 You may also choose the size of the different kinds of Nodes (endpoints and junctions), and whether to display them.
 

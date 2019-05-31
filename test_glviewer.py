@@ -2,22 +2,12 @@ import sys
 import math
 
 from Arcball import ArcballCamera, arcVec
-sys.path.append('E:/python')
-from RootsTool import IssuesGL, VBOSphere
-# from ConnectionTabWidget import Ui_ConnectionTabWidget
-# from BreakTabWidget import Ui_BreakTabWidget
-# from SplitTabWidget import Ui_SplitTabWidget
-# from AddNodeTabWidget import Ui_AddNodeTabWidget
-
-from PyQt5 import QtCore, QtGui, QtOpenGL, QtWidgets
-from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from RootsTool import IssuesGL, VBOSphere, Point3d, RootAttributes, Skeleton, mgraph
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-
-from PyQt5.QtWidgets import QMainWindow
-
+from PyQt5.QtOpenGL import *
 
 from camera import *
 from vecmath import *
@@ -29,17 +19,13 @@ import random
 try:
     from OpenGL.GL import *
 except ImportError:
-    app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "OpenGL grabber",
+    app = QApplication(sys.argv)
+    QMessageBox.critical(None, "OpenGL grabber",
             "PyOpenGL must be installed to run this example.")
     sys.exit(1)
 import OpenGL.GL as gl
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
-
-# from ModeOptions import ConnectionModeOptions, BreakModeOptions, SplitModeOptions, AddNodeOptions
-
-from RootsTool import Point3d, RootAttributes, Skeleton, mgraph
 
 NoMode = 0
 ConnectionMode = 1
@@ -63,7 +49,7 @@ def p3d2arr(p3d : Point3d):
         return p3d
 
 
-class GLWidget(QtOpenGL.QGLWidget):
+class GLWidget(QGLWidget):
     xRotationChanged = pyqtSignal(int)
     yRotationChanged = pyqtSignal(int)
     zRotationChanged = pyqtSignal(int)
@@ -120,7 +106,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.setupVis()
         self.cyls = list()
 
-        self.timer = QtCore.QTimer()
+        self.timer = QTimer()
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.timeOut)
         self.timer.start(10)
@@ -350,7 +336,7 @@ class GLWidget(QtOpenGL.QGLWidget):
             angle -= 360 * 16
     
     
-    def keyPressEvent(self, event: QtGui.QKeyEvent):
+    def keyPressEvent(self, event: QKeyEvent):
         key = event.key()
         modifiers = event.modifiers()
 
@@ -371,10 +357,10 @@ class GLWidget(QtOpenGL.QGLWidget):
                 self.isEDown = True
         
 
-        QtOpenGL.QGLWidget.keyPressEvent(self, event)
+        QGLWidget.keyPressEvent(self, event)
         
     
-    def keyReleaseEvent(self, event: QtGui.QKeyEvent):
+    def keyReleaseEvent(self, event: QKeyEvent):
         key = event.key()
         modifiers = event.modifiers()
         if key == Qt.Key_W:
@@ -398,9 +384,9 @@ class GLWidget(QtOpenGL.QGLWidget):
             elif self.currentMode == 1:
                 g = 3
                 
-        QtOpenGL.QGLWidget.keyReleaseEvent(self, event)
+        QGLWidget.keyReleaseEvent(self, event)
 
-    def wheelEvent(self, QWheelEvent : QtGui.QWheelEvent):
+    def wheelEvent(self, QWheelEvent : QWheelEvent):
         numDegrees = (QWheelEvent.angleDelta() / 8.0).y()
 
         if self.zoom < self.baseFov / self.maxFov:
@@ -422,7 +408,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         return super().wheelEvent(QWheelEvent)
 
-    def mousePressEvent(self, event: QtGui.QMouseEvent):
+    def mousePressEvent(self, event: QMouseEvent):
         
         if event.button() == Qt.RightButton and not self.isMouseLeftDown:
             self.isMouseRightDown = True
@@ -447,7 +433,7 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.lastMouseY = event.y()
         
         
-    def mouseMoveEvent(self, event: QtGui.QMouseEvent):
+    def mouseMoveEvent(self, event: QMouseEvent):
 
         if self.isMouseMiddleDown:
             difX = event.x() - self.lastMouseX
@@ -500,23 +486,23 @@ class GLWidget(QtOpenGL.QGLWidget):
         #if self.isMouseLeftDown or self.isMouseRightDown or self.isMouseMiddleDown:
         #    if event.x() > self.width():
         #        self.lastMouseX = 0
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(0, event.y()))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
+        #        newPoint = self.mapToGlobal(QPoint(0, event.y()))
+        #        QCursor.setPos(newPoint.x(), newPoint.y())
         #    elif event.x() < 0:
         #        self.lastMouseX = self.width()
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(self.width(), event.y()))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
+        #        newPoint = self.mapToGlobal(QPoint(self.width(), event.y()))
+        #        QCursor.setPos(newPoint.x(), newPoint.y())
                 
         #    if event.y() > self.height():
         #        self.lastMouseY = 0
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(event.x(), 0))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
+        #        newPoint = self.mapToGlobal(QPoint(event.x(), 0))
+        #        QCursor.setPos(newPoint.x(), newPoint.y())
         #    if event.y() < 0:
         #        self.lastMouseY = self.height()
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(event.x(), self.height()))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
+        #        newPoint = self.mapToGlobal(QPoint(event.x(), self.height()))
+        #        QCursor.setPos(newPoint.x(), newPoint.y())
         
-    def mouseReleaseEvent(self, event: QtGui.QMouseEvent):
+    def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.RightButton:
             self.isMouseRightDown = False
         elif event.button() == Qt.LeftButton:
