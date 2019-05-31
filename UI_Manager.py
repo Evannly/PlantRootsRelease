@@ -931,22 +931,26 @@ class RootsTabbedProgram(QMainWindow):
         saveButton.triggered.connect(self.saveFile)
         self.fileMenu.addAction(saveButton)
 
-        loadTraitsButton = QAction('Load traits', self)
+        loadTraitsButton = QAction('Load Traits', self)
         loadTraitsButton.triggered.connect(self.loadTraitsFile)
         self.fileMenu.addAction(loadTraitsButton)
 
-        saveTraitsButton = QAction('Save traits', self)
-        saveTraitsButton.setShortcut('Ctrl+A')
-        saveTraitsButton.setShortcutContext(Qt.ApplicationShortcut)
-        saveTraitsButton.setStatusTip('Save traits')
+        saveTraitsButton = QAction('Save Traits', self)
         saveTraitsButton.triggered.connect(self.saveTraitsFile)
         self.fileMenu.addAction(saveTraitsButton)
 
-        exitButton = QAction('Exit', self)
-        exitButton.setShortcut('Ctrl+E')
+        closeButton = QAction('Close', self)
+        closeButton.setShortcut('Ctrl+W')
+        closeButton.setShortcutContext(Qt.ApplicationShortcut)
+        closeButton.setStatusTip('Close current file')
+        closeButton.triggered.connect(self.closeFile)
+        self.fileMenu.addAction(closeButton)
+        
+        exitButton = QAction('Quit', self)
+        exitButton.setShortcut('Ctrl+Q')
         exitButton.setShortcutContext(Qt.ApplicationShortcut)
-        exitButton.setStatusTip('Exit RootsEditor')
-        exitButton.triggered.connect(self.close)
+        exitButton.setStatusTip('Quit application')
+        exitButton.triggered.connect(self.quitApp)
         self.fileMenu.addAction(exitButton)
         
         self.editMenu = self.mainMenu.addMenu('Edit')
@@ -1229,6 +1233,20 @@ class RootsTabbedProgram(QMainWindow):
     
     def redo(self):
         pass
+    
+    def closeFile(self):
+        choice = QMessageBox.question(self, 'Close', 'Close current file?', QMessageBox.Ok | QMessageBox.Cancel)
+        if choice == QMessageBox.Ok:
+            pass
+        else:
+            pass
+    
+    def quitApp(self):
+        choice = QMessageBox.question(self, 'Quit', 'Quit application?', QMessageBox.Ok | QMessageBox.Cancel)
+        if choice == QMessageBox.Ok:
+            sys.exit()
+        else:
+            pass
 
 
 def main():
