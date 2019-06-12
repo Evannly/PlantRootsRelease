@@ -24,7 +24,7 @@ import sys
 from VisualizationTabWidget import Ui_VisualizationTabWidget
 from EditingTabWidget import Ui_EditingTabWidget
 from TraitsTabWidget import Ui_TraitsTabWidget
-
+from SorghumTabWidget import Sorghum_Window
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
@@ -60,14 +60,15 @@ def getColorList(size, colormap):
 
     norm = plt.Normalize(minval, maxval)
     listFormat = colormap(norm(colorList))
-
     return listFormat.tolist()
 
 
 from math import log10, floor
 def round_to_2(x):
   return round(x, -int(floor(log10(abs(x)))) + 1)
+  
 
+    
 
 class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
 
@@ -78,9 +79,11 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
     backgroundColorChanged = pyqtSignal(float, float, float)
     loadMeshSig = pyqtSignal()
 
-    def getHeatmap(self, idx : int):
+    def getHeatmap(self, idx : int): #idx is option of heatmap
+        print("idx is ", idx)
         if idx == 0:
             return [[1.0, 0.0, 0.0, 1.0]]
+			
         else:
             return getColorList(1000, cm.get_cmap(self.heatmapOptions[idx]))
 
@@ -104,19 +107,15 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
     def nodeColorizationChanged(self, optionId : int):
         if optionId == 0: #thickness
             self.graph.colorizeNodesByThickness()
-            #self.graph.nodeColorization = Colorization.THICKNESS
             pass
         elif optionId == 1: #width
             self.graph.colorizeNodesByWidth()
-            #self.graph.nodeColorization = Colorization.WIDTH
             pass
         elif optionId == 2: #degree
             self.graph.colorizeNodesByDegree()
-            #self.graph.nodeColorization = Colorization.DEGREE
             pass
         elif optionId == 3: #component
             self.graph.colorizeNodesByComponent()
-            #self.graph.nodeColorization = Colorization.COMPONENTS
             pass
         elif optionId == 4: #flat node color
             self.graph.colorizeNodesByConstantColor()
@@ -344,101 +343,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
 
         self.viewSkeleton.emit(True)
 
-        # self.geometryVisualization.currentIndexChanged.connect(self.geometryVisualizationChanged)
-
-        # self.viewGraph.connect(viewGraphButton.trigger)
-        # graphObject.enteringGraphView.connect(self.enteringGraphView)
-
-        # self.viewSkeleton.connect(viewSkeletonButton.trigger)
-        # graphObject.enteringSkeletonView.connect(self.enteringSkelView)
-
-        # self.viewBoth.connect(viewBothButton.trigger)
-        # graphObject.enteringBothView.connect(self.enteringBothView)
-
-        # self.lowColor = QColor(Qt.blue)
-        # self.highColor = QColor(Qt.red)
-
-        # self.lowColorButton.setAutoFillBackground(True)
-        # self.highColorButton.setAutoFillBackground(True)
-
-        # self.setLowColor(self.lowColor)
-        # self.setHighColor(self.highColor)
-
-        # self.lowColorButton.clicked.connect(self.pickLowColor)
-        # self.highColorButton.clicked.connect(self.pickHighColor)
-
-        # self.lowColorChanged.connect(graphObject.lowColorChanged)
-        # self.highColorChanged.connect(graphObject.highColorChanged)
-
-        # self.lowColorChanged.emit(self.lowColor.redF(), self.lowColor.greenF(), self.lowColor.blueF())
-        # self.highColorChanged.emit(self.highColor.redF(), self.highColor.greenF(), self.highColor.blueF())
-        # self.geometryVisualizationOptions = {}
-        # self.geometryVisualizationOptions[0] = "View Skeleton"
-        # self.geometryVisualizationOptions[1] = "View MetaGraph"
-        # self.geometryVisualizationOptions[2] = "View Both"
-        # for key in self.geometryVisualizationOptions:
-        #    self.geometryVisualization.addItem(self.geometryVisualizationOptions[key])
-
-    #@pyqtSlot(bool)
-    #def pickLowColor(self, someBool):
-    #    pickedColor = QColorDialog.getColor(self.lowColor, self.widget)
-    #    self.setLowColor(pickedColor)
-    #@pyqtSlot(bool)
-    #def pickHighColor(self, someBool):
-    #    pickedColor = QColorDialog.getColor(self.highColor, self.widget)
-    #    self.setHighColor(pickedColor)
-    #@pyqtSlot(QColor)
-    #def setLowColor(self, lowColor : QColor):
-    #    self.lowColor = lowColor
-    #    lowColorHSL = self.lowColor.toHsl()
-    #    lowLightness = lowColorHSL.lightnessF()
-    #    lowTextColor = QColor(Qt.black)
-    #    if lowLightness < 0.1791:
-    #        lowTextColor = QColor(Qt.white)
-    #    self.lowColorButton.setStyleSheet( "background-color: " + self.lowColor.name() + "; color:" + lowTextColor.name())
-    #    self.lowColorButton.update()
-    #    self.lowColorChanged.emit(self.lowColor.redF(), self.lowColor.greenF(), self.lowColor.blueF())
-
-    #@pyqtSlot(QColor)
-    #def setHighColor(self, highColor : QColor):
-    #    self.highColor = highColor
-
-    #    highColorHSL = self.highColor.toHsl()
-    #    highLightness = highColorHSL.lightnessF()
-    #    highTextColor = QColor(Qt.black)
-    #    if highLightness < 0.1791:
-    #        highTextColor = QColor(Qt.white)
-    #    self.highColorButton.setStyleSheet( "background-color: " + self.highColor.name() + "; color:" + highTextColor.name())
-    #    self.highColorButton.update()
-
-    #    self.highColorChanged.emit(self.highColor.redF(), self.highColor.greenF(), self.highColor.blueF())
-            #@pyqtSlot(int)
-    #def geometryVisualizationChanged(self, optionId : int):
-    #    if optionId == 0: #skeleton
-    #        self.viewSkeleton.emit(True)
-    #        pass
-    #    elif optionId == 1: #graph
-    #        self.viewGraph.emit(True)
-    #        pass
-    #    elif optionId == 2: #both
-    #        self.viewBoth.emit(True)
-    #        pass
-    #@pyqtSlot(bool)
-    #def enteringSkelView(self, val : bool):
-    #    self.geometryVisualization.currentIndexChanged.disconnect(self.geometryVisualizationChanged)
-    #    self.geometryVisualization.setCurrentIndex(0)
-    #    self.geometryVisualization.currentIndexChanged.connect(self.geometryVisualizationChanged)
-    #@pyqtSlot(bool)
-    #def enteringGraphView(self, val : bool):
-    #    self.geometryVisualization.currentIndexChanged.disconnect(self.geometryVisualizationChanged)
-    #    self.geometryVisualization.setCurrentIndex(1)
-    #    self.geometryVisualization.currentIndexChanged.connect(self.geometryVisualizationChanged)
-    #@pyqtSlot(bool)
-    #def enteringBothView(self, val : bool):
-    #    self.geometryVisualization.currentIndexChanged.disconnect(self.geometryVisualizationChanged)
-    #    self.geometryVisualization.setCurrentIndex(2)
-    #    self.geometryVisualization.currentIndexChanged.connect(self.geometryVisualizationChanged)
-
 
 class EditingTabWidget(Ui_EditingTabWidget, QObject):
 
@@ -476,13 +380,6 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
     @pyqtSlot(bool)
     def connectionModePressed(self, pressed : bool):
         self.changeMode(ConnectionMode)
-        #self.exitCurrentMode()
-        #if self.mode != ConnectionMode:
-        #    self.mode = ConnectionMode
-        #    if self.graph != None:
-        #        self.graph.unselectAll()
-        #        self.updateWidget()
-        #    self.modeChangeSig.emit(self.mode)
 
     @pyqtSlot(bool)
     def acceptConnectionPressed(self, pressed : bool):
@@ -493,14 +390,6 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
     @pyqtSlot(bool)
     def breakModePressed(self, pressed : bool):
         self.changeMode(BreakMode)
-        #self.exitCurrentMode()
-        #if self.mode != BreakMode:
-        #    self.mode = BreakMode
-        #    if self.graph != None:
-        #        self.graph.unselectAll()
-        #        self.updateWidget()
-        #    self.modeChangeSig.emit(self.mode)
-
     @pyqtSlot(bool)
     def removeComponentPressed(self, pressed: bool):
         self.changeMode(RemoveComponentMode)
@@ -508,13 +397,7 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
     @pyqtSlot(bool)
     def splitEdgeModePressed(self, pressed : bool):
         self.changeMode(SplitEdgeMode)
-        #self.exitCurrentMode()
-        #if self.mode != SplitMode:
-        #    self.mode = SplitMode
-        #    if self.graph != None:
-        #        self.graph.unselectAll()
-        #        self.updateWidget()
-        #    self.modeChangeSig.emit(self.mode)
+
 
     @pyqtSlot(bool)
     def acceptRemovalPressed(self, pressed : bool):
@@ -570,13 +453,6 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
                 if mode == ConnectionMode:
                     self.graph.setDisplayOnlySelectedComponents(self.showSelected)
                     self.graph.setShowBoundingBoxes(self.showBoxes)
-                # if mode == SelectPrimaryNodesMode \
-                #         or mode == SelectPrimaryBranchesMode \
-                #         or mode == SelectStemMode \
-                #         or mode == SelectSegmentPointMode:
-                #     self.graph.setDisplayStem(self.showStem)
-                #     self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
-                # else:
                 self.graph.setDisplayStem(False)
                 self.graph.setDisplayPrimaryNodes(False)
             self.modeChangeSig.emit(self.mode)
@@ -628,6 +504,14 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
             self.edgesToBreak.setText("")
             self.ComponentOne.clear()
             self.ComponentTwo.clear()
+class SorghumTabWidget(Sorghum_Window,QObject):
+    modeChangeSig = pyqtSignal(int)
+    def __init__(self,graphObject: mgraph,widget=None):
+        Ui_TraitsTabWidget.__init__(self)
+        QObject.__init__(self)
+        self.setupUi(widget)
+        self.widget = widget
+        self.graph = graphObject
         
 class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     modeChangeSig = pyqtSignal(int)
@@ -701,20 +585,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def showNodeSuggestionChecked(self, doShow : bool):
         if self.graph != None:
             self.graph.setDisplaySuggestedNode(doShow)
-    # @pyqtSlot(bool)
-    # def acceptTraitSelectionPressed(self, pressed : bool):
-    #     if self.mode == SelectStemMode:
-    #         if self.graph:
-    #             self.graph.selectStemOperation()
-    #             self.updateWidget()
-    #     if self.mode == SelectStemNodeMode:
-    #         if self.graph:
-    #             self.graph.selectStemPrimaryNodeOperation()
-    #             self.updateWidget()
-    #     if self.mode == SelectPrimaryEdgesMode:
-    #         if self.graph:
-    #             self.graph.selectPrimaryEdgesOperation()
-    #             self.updateWidget()
 
     @pyqtSlot(bool)
     def showPrimaryNodesChecked(self, doShow : bool):
@@ -1000,10 +870,9 @@ class RootsTabbedProgram(QMainWindow):
         
     def __setUI(self, title="RootsEditor"):
         self.mainMenu = self.menuBar()
-        
         self.mainMenu.setNativeMenuBar(False)
         self.fileMenu = self.mainMenu.addMenu('File')
-        
+		#load root file
         loadButton = QAction('Load rootfile', self)
         loadButton.setShortcut('Ctrl+L')
         loadButton.setShortcutContext(Qt.ApplicationShortcut)
@@ -1149,6 +1018,7 @@ class RootsTabbedProgram(QMainWindow):
         self.createTabWidget(viewSkeletonButton, viewGraphButton, viewBothButton)
         
     def createTabWidget(self, viewSkeletonButton, viewGraphButton, viewBothButton):
+        
         rightDock = QDockWidget('Editing', self)
         rightDock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.tabWidget = QTabWidget(rightDock)
@@ -1165,15 +1035,12 @@ class RootsTabbedProgram(QMainWindow):
         self.TraitsTab.loadTraitsSig.connect(self.loadTraitsFile)
         self.TraitsTab.saveTraitsSig.connect(self.saveTraitsFile)
         
-        #widget = QtWidgets.QWidget(self.tabWidget)
-        #self.BreakTab = BreakTabWidget(widget)
-        #self.tabWidget.addTab(widget, 'Break')
-
-        #widget = QtWidgets.QWidget(self.tabWidget)
-        #self.SplitTab = SplitTabWidget(widget)
-        #self.tabWidget.addTab(widget, 'Split')
-
+        widget = QtWidgets.QWidget(self.tabWidget)
+        self.SorghumTab = SorghumTabWidget(self.glwidget.graph,widget)
+        self.tabWidget.addTab(widget,'Sorghum')
+        self.TraitsTab.modeChangeSig.connect(self.switchModes)
         rightDock.setWidget(self.tabWidget)
+        
         label = QtWidgets.QLabel('', rightDock)
         rightDock.setTitleBarWidget(label)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, rightDock)
@@ -1206,7 +1073,6 @@ class RootsTabbedProgram(QMainWindow):
             return
         self.currentMode = ConnectionMode
         self.tabWidget.setCurrentIndex(1)
-        # self.glwidget.enterConnectionMode(self.ConnectionTab)
 
     
     def enterBreakMode(self):
@@ -1214,21 +1080,18 @@ class RootsTabbedProgram(QMainWindow):
             return
         self.currentMode = BreakMode
         self.tabWidget.setCurrentIndex(2)
-        # self.glwidget.enterBreakMode(self.BreakTab)
         
     def enterSplitMode(self):
         if self.currentMode == SplitEdgeMode or self.currentMode == -2:
             return
         self.currentMode = SplitEdgeMode
         self.tabWidget.setCurrentIndex(3)
-        # self.glwidget.enterSplitMode(self.SplitTab)
 
     def enterRemoveComponentMode(self):
         if self.currentMode == RemoveComponentMode or self.currentMode == -2:
             return
         self.currentMode = RemoveComponentMode
         self.tabWidget.setCurrentIndex(4)
-        # self.glwidget.enterRemoveComponentMode(self.SplitTab)
 
     def enterSelectStemMode(self):
         if self.currentMode == SelectStemMode or self.currentMode == -2:
@@ -1236,7 +1099,6 @@ class RootsTabbedProgram(QMainWindow):
         print("Enter select stem mode 903")
         self.currentMode = SelectStemMode
         self.tabWidget.setCurrentIndex(6)
-        # self.glwidget.enterSelectStemMode(self.)
 
     def enterSelectStemPrimaryNodeMode(self):
         if self.currentMode == SelectPrimaryNodesMode or self.currentMode == -2:
@@ -1251,25 +1113,6 @@ class RootsTabbedProgram(QMainWindow):
         self.currentMode = SelectPrimaryBranchesMode
         self.tabWidget.setCurrentIndex(8)
 
-    # def enterAddNodeMode(self):
-    #     if self.currentMode == 3:
-    #         return
-    #     self.closeDockWidget()
-    #     self.currentMode = 3
-    #
-    #     self.closeDockWidget()
-    #
-    #     dock = QDockWidget('Add Node Tab', self)
-    #     dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
-    #     dockWidget = QWidget()
-    #     AddTab = AddNodeTabWidget(dockWidget)
-    #
-    #     dock.setWidget(dockWidget)
-    #     label = QtWidgets.QLabel('', dock)
-    #     dock.setTitleBarWidget(label)
-    #     self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
-    #     self.glwidget.enterAddNodeMode(AddTab)
-    #     self.dockedWidget = dock
 
     
     def eventFilter(self, obj, event):
@@ -1287,17 +1130,13 @@ class RootsTabbedProgram(QMainWindow):
         
     def loadFile(self):
         options = QFileDialog.Options()
-        
         options |= QFileDialog.DontUseNativeDialog
         self.loadFileName = QFileDialog.getOpenFileName(self, 'Open File', "")
-#        qDebug(str(self.loadFileName[0]))
-        
         if self.loadFileName[0] != "":
             self.glwidget.loadFileEvent(str(self.loadFileName[0]))
             self.EditingTab.setGraph(self.glwidget.graph)
             self.TraitsTab.setGraph(self.glwidget.graph)
-            #self.currentMode = -1
-            #self.metaThread.loadFileEvent(str(self.loadFileName[0]))
+
     def loadMesh(self):
         options = QFileDialog.Options()
 
@@ -1322,8 +1161,7 @@ class RootsTabbedProgram(QMainWindow):
 
         if self.loadFileName[0] != "":
             self.glwidget.loadTraitsFileEvent(str(self.loadFileName[0]))
-            # self.EditingTab.setGraph(self.glwidget.graph)
-            # self.TraitsTab.setGraph(self.glwidget.graph)
+
 
     def saveTraitsFile(self):
         options = QFileDialog.Options()
@@ -1337,8 +1175,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = RootsTabbedProgram()
     window.show()
-#    dialog = QDialog()
-#    prog = RootsGUI(dialog)
-    
-#    dialog.show()
     sys.exit(app.exec_())
