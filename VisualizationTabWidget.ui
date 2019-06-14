@@ -3537,7 +3537,7 @@
           <property name="geometry">
            <rect>
             <x>50</x>
-            <y>180</y>
+            <y>170</y>
             <width>30</width>
             <height>20</height>
            </rect>
@@ -3564,7 +3564,7 @@
           <property name="geometry">
            <rect>
             <x>220</x>
-            <y>180</y>
+            <y>170</y>
             <width>30</width>
             <height>20</height>
            </rect>
@@ -3591,7 +3591,7 @@
           <property name="geometry">
            <rect>
             <x>80</x>
-            <y>180</y>
+            <y>170</y>
             <width>141</width>
             <height>22</height>
            </rect>
@@ -4058,8 +4058,8 @@
          <widget class="QCheckBox" name="magnifyNonBridges">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>210</y>
+            <x>30</x>
+            <y>200</y>
             <width>165</width>
             <height>17</height>
            </rect>
@@ -4089,7 +4089,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>160</y>
+            <y>150</y>
             <width>68</width>
             <height>17</height>
            </rect>
@@ -4334,7 +4334,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>180</y>
+            <y>170</y>
             <width>35</width>
             <height>20</height>
            </rect>
@@ -4788,8 +4788,8 @@
          <widget class="QCheckBox" name="displayOnlyNonBridges">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>230</y>
+            <x>30</x>
+            <y>220</y>
             <width>165</width>
             <height>17</height>
            </rect>
@@ -4813,6 +4813,33 @@
           </property>
           <property name="tristate">
            <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="displayLongEdges">
+          <property name="geometry">
+           <rect>
+            <x>66</x>
+            <y>240</y>
+            <width>129</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>125</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Display long edges</string>
           </property>
          </widget>
         </widget>

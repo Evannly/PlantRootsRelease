@@ -3957,7 +3957,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Magnify All Primary Nodes</string>
+           <string>Magnify</string>
           </property>
           <property name="checked">
            <bool>false</bool>
@@ -4421,7 +4421,7 @@
            </font>
           </property>
           <property name="text">
-           <string>random color each node</string>
+           <string>Random Color</string>
           </property>
           <property name="checked">
            <bool>false</bool>
@@ -4431,7 +4431,7 @@
           <property name="geometry">
            <rect>
             <x>280</x>
-            <y>40</y>
+            <y>20</y>
             <width>41</width>
             <height>20</height>
            </rect>
@@ -4480,9 +4480,9 @@
          <widget class="QLabel" name="DisplayOptions_7">
           <property name="geometry">
            <rect>
-            <x>205</x>
-            <y>40</y>
-            <width>61</width>
+            <x>180</x>
+            <y>20</y>
+            <width>81</width>
             <height>20</height>
            </rect>
           </property>
@@ -4498,7 +4498,7 @@
            </font>
           </property>
           <property name="text">
-           <string>look dist</string>
+           <string>look distance</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -4507,7 +4507,7 @@
          <widget class="QPushButton" name="FindPrimaryNodesButton">
           <property name="geometry">
            <rect>
-            <x>210</x>
+            <x>200</x>
             <y>120</y>
             <width>111</width>
             <height>23</height>
@@ -4944,10 +4944,10 @@
          <widget class="Line" name="line">
           <property name="geometry">
            <rect>
-            <x>190</x>
-            <y>40</y>
+            <x>160</x>
+            <y>20</y>
             <width>20</width>
-            <height>101</height>
+            <height>131</height>
            </rect>
           </property>
           <property name="orientation">
@@ -4957,9 +4957,9 @@
          <widget class="QLabel" name="DisplayOptions_8">
           <property name="geometry">
            <rect>
-            <x>210</x>
-            <y>70</y>
-            <width>61</width>
+            <x>180</x>
+            <y>40</y>
+            <width>81</width>
             <height>20</height>
            </rect>
           </property>
@@ -4985,7 +4985,7 @@
           <property name="geometry">
            <rect>
             <x>280</x>
-            <y>70</y>
+            <y>40</y>
             <width>41</width>
             <height>20</height>
            </rect>
@@ -5034,8 +5034,8 @@
          <widget class="QCheckBox" name="showNodeSuggestionCheck">
           <property name="geometry">
            <rect>
-            <x>210</x>
-            <y>94</y>
+            <x>180</x>
+            <y>70</y>
             <width>150</width>
             <height>20</height>
            </rect>
@@ -5056,6 +5056,30 @@
           </property>
           <property name="checked">
            <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="showClusterInputCheck">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>90</y>
+            <width>161</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Show Cluster Input</string>
           </property>
          </widget>
         </widget>
