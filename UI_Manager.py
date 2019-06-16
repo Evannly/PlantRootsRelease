@@ -185,10 +185,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
     @pyqtSlot(bool)
     def showOnlyNonBridgesPressed(self, showOnly: bool):
         self.graph.showOnlyNonBridges(showOnly)
-        
-    @pyqtSlot(bool)
-    def displayLongEdgesPressed(self, colorWhite: bool):
-        self.graph.displayLongEdges(colorWhite)
 
     @pyqtSlot(bool)
     def backgroundColorClicked(self, active):
@@ -315,7 +311,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.magnifyNonBridges.toggled.connect(self.magnifyNonBridgesPressed)
         self.displayOnlyNonBridges.toggled.connect(
             self.showOnlyNonBridgesPressed)
-        self.displayLongEdges.toggled.connect(self.displayLongEdgesPressed)
 
         self.backgroundColor.clicked.connect(self.backgroundColorClicked)
         self.constantNodeColor.clicked.connect(self.constantNodeColorClicked)
@@ -607,6 +602,11 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def showClusterInputChecked(self, doShow: bool):
         if self.graph != None:
             self.graph.setDisplayClusterInput(doShow)
+            
+    @pyqtSlot(bool)
+    def tracePrimaryBranchesChecked(self, doTrace: bool):
+        if self.graph != None:
+            self.graph.setDisplayTracingPrimaryBranches(doTrace)
 
     @pyqtSlot(bool)
     def showPrimaryNodesChecked(self, doShow: bool):
@@ -756,6 +756,8 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
             self.showNodeSuggestionChecked)
         self.showClusterInputCheck.toggled.connect(
             self.showClusterInputChecked)
+        self.tracePrimaryBranchesCheck.toggled.connect(
+            self.tracePrimaryBranchesChecked)
         self.FindPrimaryNodesButton.clicked.connect(
             self.FindPrimaryNodePressed)
 

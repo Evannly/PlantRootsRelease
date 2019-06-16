@@ -4508,7 +4508,7 @@
           <property name="geometry">
            <rect>
             <x>200</x>
-            <y>120</y>
+            <y>125</y>
             <width>111</width>
             <height>23</height>
            </rect>
@@ -5035,7 +5035,7 @@
           <property name="geometry">
            <rect>
             <x>180</x>
-            <y>70</y>
+            <y>60</y>
             <width>150</width>
             <height>20</height>
            </rect>
@@ -5062,7 +5062,7 @@
           <property name="geometry">
            <rect>
             <x>180</x>
-            <y>90</y>
+            <y>80</y>
             <width>161</width>
             <height>17</height>
            </rect>
@@ -5080,6 +5080,30 @@
           </property>
           <property name="text">
            <string>Show Cluster Input</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="tracePrimaryBranchesCheck">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>100</y>
+            <width>161</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>160</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Trace Primary Branches</string>
           </property>
          </widget>
         </widget>
