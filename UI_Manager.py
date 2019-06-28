@@ -945,6 +945,13 @@ class RootsTabbedProgram(QMainWindow):
         saveButton.triggered.connect(self.saveFile)
         self.fileMenu.addAction(saveButton)
 
+        saveFairedButton = QAction('Save Faired Skeleton as New File', self)
+        saveFairedButton.setShortcut('Ctrl+Shift+S')
+        saveFairedButton.setShortcutContext(Qt.ApplicationShortcut)
+        saveFairedButton.setStatusTip('Perform Fairing on Current Skeleton and Save It as New File')
+        saveFairedButton.triggered.connect(self.saveFairedSkeletonClicked)
+        self.fileMenu.addAction(saveFairedButton)
+
         loadTraitsButton = QAction('Load Traits', self)
         loadTraitsButton.triggered.connect(self.loadTraitsFile)
         self.fileMenu.addAction(loadTraitsButton)
@@ -1016,8 +1023,6 @@ class RootsTabbedProgram(QMainWindow):
         self.modeMenu.addAction(RemoveComponentButton)
 
         SelectStemButton = QAction('Stem', self)
-        SelectStemButton.setShortcut('Ctrl+Shift+S')
-        SelectStemButton.setShortcutContext(Qt.ApplicationShortcut)
         SelectStemButton.setStatusTip('Select two end node of a stem')
         SelectStemButton.triggered.connect(self.enterSelectStemMode)
         self.modeMenu.addAction(SelectStemButton)
@@ -1224,6 +1229,15 @@ class RootsTabbedProgram(QMainWindow):
 
         if self.saveFileName[0] != "":
             self.glwidget.graph.saveToFile(self.saveFileName[0])
+            
+    def saveFairedSkeletonClicked(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.saveFairedSkeletonName = QFileDialog.getSaveFileName(
+            self, 'Save File', filter="ply(*.ply)")
+
+        if self.saveFairedSkeletonName[0] != "":
+            self.glwidget.graph.saveFairedSkeleton(self.saveFairedSkeletonName[0])
 
     def loadTraitsFile(self):
         options = QFileDialog.Options()
