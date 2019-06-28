@@ -5,7 +5,6 @@ Created on Tue Nov 28 02:48:14 2017
 @author: Will
 """
 
-# from RootsTool import Point3d, RootAttributes, Skeleton, mgraph
 import sys
 sys.path.append('E:/python')
 from RootsTool import Point3d, RootAttributes, Skeleton, mgraph
@@ -41,15 +40,27 @@ ConnectionMode = 1
 BreakMode = 2
 SplitEdgeMode = 3
 RemoveComponentMode = 4
-
-
 SelectStemMode = 6
 SelectPrimaryNodesMode = 7
 SelectPrimaryBranchesMode = 8
 SelectSegmentPointMode = 9
-
 ViewNodeInfoMode = 10
 
+#global variables for sorghum algorithm
+upperRadiiThresh = 10.0
+lowerRadiiThresh = 1.0
+compThreshSize = 200.0
+branchSizeMin = 200
+curvatureWindow = 30
+maxBranchLength = 900
+radiusTol = 1.2
+emergenceAngleThresh = 360.0
+tipAngleThresh = 120.0
+tortuosityThresh = 2.5
+emergenceLowerRadius = 2.0
+lowerStemThresh = 1.0
+emergeWindow = 30
+useThickestVertex = False
 def getColorList(size, colormap):
     colorList = []
     minval = 0
@@ -68,7 +79,6 @@ def round_to_2(x):
   return round(x, -int(floor(log10(abs(x)))) + 1)
   
 
-    
 
 class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
 
@@ -80,7 +90,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
     loadMeshSig = pyqtSignal()
 
     def getHeatmap(self, idx : int): #idx is option of heatmap
-        print("idx is ", idx)
         if idx == 0:
             return [[1.0, 0.0, 0.0, 1.0]]
 			
@@ -286,8 +295,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.edgeHeatmapType.currentIndexChanged.connect(self.edgeHeatmapChanged)
         self.nodeHeatmapType.currentIndexChanged.connect(self.nodeHeatmapChanged)
 
-        self.edgeColorization.setCurrentIndex(1)
-        self.nodeColorization.setCurrentIndex(1)
         self.edgeColorization.setCurrentIndex(0)
         self.nodeColorization.setCurrentIndex(0)
 
@@ -465,6 +472,7 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
         self.graph = graph
         self.updateWidget()
         if self.mode == ConnectionMode and self.graph != None:
+            print("in setGraph")
             self.graph.setDisplayOnlySelectedComponents(self.showSelected)
             self.graph.setShowBoundingBoxes(self.showBoxes)
 
@@ -504,15 +512,77 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
             self.edgesToBreak.setText("")
             self.ComponentOne.clear()
             self.ComponentTwo.clear()
+#parts to change
 class SorghumTabWidget(Sorghum_Window,QObject):
-    modeChangeSig = pyqtSignal(int)
-    def __init__(self,graphObject: mgraph,widget=None):
-        Ui_TraitsTabWidget.__init__(self)
+    @pyqtSlot(bool)
+    def useThickestVertexChecked(self, doShow : bool):
+        useThickestVertex = doShow
+    @pyqtSlot(bool)
+    def identifyStemPressed(self, doShow : bool):
+        try:
+            self.lowerThresh = float(self.lineEdit.text())
+        except ValueError:
+            self.lowerThresh = int(self.lineEdit.text())
+        if self.graph != None:
+            self.graph.FindStemOperation(self.lowerThresh)
+    @pyqtSlot(bool)
+    def identifyBranchesPressed(self, doShow : bool):
+        try:
+            if len(self.lineEdit_3.text()) > 0 :
+                self.minBranchSize = int(self.lineEdit_3.text())
+            else:
+                self.minBranchSize = -1
+            if len(self.lineEdit_4.text()) > 0 :
+                self.maxBranchSize = int(self.lineEdit_4.text())
+            else:
+                self.maxBranchSize = -1
+            if len(self.lineEdit_5.text()) > 0 :
+                self.radiusTolerance = float(self.lineEdit_5.text())
+            else:
+                self.radiusTolerance = -1
+            if len(self.lineEdit_6.text()) > 0 :
+                self.tipAngleThresh = float(self.lineEdit_6.text())
+            else:
+                self.tipAngleThresh = -1
+            if len(self.lineEdit_7.text()) > 0 :
+                self.tortuosityThresh = float(self.lineEdit_7.text())
+            else:
+                self.tortuosityThresh = -1
+        except ValueError:
+            print("Branch parameter input error")
+            
+        if self.graph != None:
+            self.graph.setSorghumBranchParameters(self.minBranchSize,self.maxBranchSize,self.radiusTolerance,self.tipAngleThresh,self.tortuosityThresh)
+            self.graph.sorghumBranchOperation()
+                  
+    @pyqtSlot(bool)
+    def showStemChecked(self, doShow : bool):
+        if self.graph != None:
+            self.graph.setDisplaySuggestedStem(doShow)   
+    @pyqtSlot(bool)
+    def showBranchChecked(self, doShow : bool):
+        self.showBranch = doShow
+        if self.graph != None:
+                self.graph.setDisplayBranch(self.showBranch) 
+    def __init__(self,graphObject:mgraph, widget=None):
+        Sorghum_Window.__init__(self)
         QObject.__init__(self)
         self.setupUi(widget)
         self.widget = widget
         self.graph = graphObject
-        
+        self.checkBox.toggled.connect(self.useThickestVertexChecked)
+        self.pushButton.clicked.connect(self.identifyStemPressed)
+        self.checkBox_2.toggled.connect(self.showStemChecked)
+        self.pushButton_2.clicked.connect(self.identifyBranchesPressed)
+        self.checkBox_3.toggled.connect(self.showBranchChecked)
+        self.upperThresh = 0.0
+        self.lowerThresh = 0.0
+        self.minBranchSize = 0
+        self.maxBranchSize = 0
+        self.radiusTolerance = 0
+        self.tipAngleThresh = 0
+        self.tortuosityThresh = 0
+        self.showBranch = False
 class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     modeChangeSig = pyqtSignal(int)
     loadTraitsSig = pyqtSignal()
@@ -552,10 +622,10 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def showStemSuggestionChecked(self, doShow : bool):
         if self.graph != None:
             self.graph.setDisplaySuggestedStem(doShow)
+           
 
     @pyqtSlot(bool)
     def FindStemPressed(self, pressed : bool):
-        # self.stemLowThreshold = float(self.LowThresholdLineEdit.text())
         try:
             self.stemLowThreshold = float(self.LowThresholdLineEdit.text())
         except ValueError:
@@ -675,7 +745,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     @pyqtSlot()
     def horizontalSliderRadiusChanged(self):
         sliderVal = self.horizontalSliderRadius.value()
-        # floor = 1.0 * sliderVal / 100.0
         if not self.horizontalSliderRadius.isSliderDown():
             self.graph.setSegmentHorizontalSliderRadius(sliderVal)
 
@@ -708,7 +777,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.saveTraitsButton.clicked.connect(self.saveTraitsPressed)
 
         # manual find stem
-        # self.AcceptTraitSelectionButton.clicked.connect(self.acceptTraitSelectionPressed)
         self.showStemCheck.toggled.connect(self.showStemChecked)
         self.SelectStemButton.clicked.connect(self.selectStemPressed)
         self.ConfirmStemButton.clicked.connect(self.confirmStemPressed)
@@ -1126,17 +1194,14 @@ class RootsTabbedProgram(QMainWindow):
             self.dockedWidget.destroy()
 
     
-    
-        
+
     def loadFile(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
         self.loadFileName = QFileDialog.getOpenFileName(self, 'Open File', "")
         if self.loadFileName[0] != "":
             self.glwidget.loadFileEvent(str(self.loadFileName[0]))
             self.EditingTab.setGraph(self.glwidget.graph)
             self.TraitsTab.setGraph(self.glwidget.graph)
-
+            
     def loadMesh(self):
         options = QFileDialog.Options()
 

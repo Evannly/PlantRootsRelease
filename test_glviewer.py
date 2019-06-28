@@ -4,10 +4,6 @@ import math
 from Arcball import ArcballCamera, arcVec
 sys.path.append('E:/python')
 from RootsTool import IssuesGL, VBOSphere
-# from ConnectionTabWidget import Ui_ConnectionTabWidget
-# from BreakTabWidget import Ui_BreakTabWidget
-# from SplitTabWidget import Ui_SplitTabWidget
-# from AddNodeTabWidget import Ui_AddNodeTabWidget
 
 from PyQt5 import QtCore, QtGui, QtOpenGL, QtWidgets
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
@@ -71,7 +67,7 @@ class GLWidget(QtOpenGL.QGLWidget):
     @pyqtSlot(str)
     def loadFileEvent(self, filename : str):
         self.graph.loadFromFile(filename)
-        self.recenter = self.recenter()
+        self.center = self.recenter()
 
     @pyqtSlot(str)
     def loadTraitsFileEvent(self, filename : str):
@@ -126,12 +122,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.timer.start(10)
         
         self.graph = mgraph()
-
-        # self.connectionOptions = ConnectionModeOptions(self, self.graph)
-        # self.breakOptions = BreakModeOptions(self, self.graph)
-        # self.splitOptions = SplitModeOptions(self, self.graph)
-        # self.addNodeOptions = AddNodeOptions(self, self.graph)
-
         self.modes = {-1 : 'NoMode', 0 : 'Connection Mode', 1 : 'Separation Mode', 2 : 'Spltting Mode'}
         
         self.currentMode = -1
@@ -203,8 +193,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.imageCenterY = h / 2.0
         self.backgroundColor = [0.3, 0.3, 0.3, 1.0]
 
-        #self.graph.setZoom(self.graph.skeleton.radius, 0.0, 0.0, self.camera.standoff, 0, 0, 1)
-
         self.arcball = ArcballCamera()
         
 
@@ -232,17 +220,8 @@ class GLWidget(QtOpenGL.QGLWidget):
         
         
         glEnable(GL_LIGHT0)
-        #glEnable(GL_LIGHT1)
-        #glEnable(GL_LIGHT2)
-        #glEnable(GL_LIGHT3)
         glLightfv(GL_LIGHT0, GL_POSITION, lightpos0)
         glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, (-1, 0, 0, 1.0))
-        #glLightfv(GL_LIGHT1, GL_POSITION, lightpos1)
-        #glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, (0, -1, 0, 1.0))
-        #glLightfv(GL_LIGHT2, GL_POSITION, lightpos2)
-        #glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, (0, 0, -1, 1.0))
-        #glLightfv(GL_LIGHT3, GL_POSITION, lightpos3)
-        #glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, (-1, -1, -1, 1.0))
         glDisable(GL_LIGHTING)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
@@ -299,8 +278,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
-        # gluLookAt(pos[0], pos[1], pos[2], lpos[0], lpos[1], lpos[2], up[0], up[1], up[2])
-        # self.arcball.rotate()
 
         lightpos = pos
         color = (1.0, 0.0, 1.0, 1.0)
@@ -313,10 +290,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.graph.draw()
         ldir /= np.linalg.norm(ldir)
         glPopMatrix()
-
-        # glPushMatrix()
-        # self.graph.drawBox()
-        # glPopMatrix()
 
         glPopMatrix()
 
@@ -480,7 +453,7 @@ class GLWidget(QtOpenGL.QGLWidget):
                 self.camera.increment_theta(0.01*difY * self.speed)
                 self.camera.resolveAngularPosition()
 
-            #self.arcball.move(event.x(), event.y())
+       
             
             self.lastMouseX = event.x()
             self.lastMouseY = event.y()
@@ -496,25 +469,7 @@ class GLWidget(QtOpenGL.QGLWidget):
             
             self.lastMouseX = event.x()
             self.lastMouseY = event.y()
-            
-        #if self.isMouseLeftDown or self.isMouseRightDown or self.isMouseMiddleDown:
-        #    if event.x() > self.width():
-        #        self.lastMouseX = 0
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(0, event.y()))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
-        #    elif event.x() < 0:
-        #        self.lastMouseX = self.width()
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(self.width(), event.y()))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
-                
-        #    if event.y() > self.height():
-        #        self.lastMouseY = 0
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(event.x(), 0))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
-        #    if event.y() < 0:
-        #        self.lastMouseY = self.height()
-        #        newPoint = self.mapToGlobal(QtCore.QPoint(event.x(), self.height()))
-        #        QtGui.QCursor.setPos(newPoint.x(), newPoint.y())
+
         
     def mouseReleaseEvent(self, event: QtGui.QMouseEvent):
         if event.button() == Qt.RightButton:
@@ -522,15 +477,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         elif event.button() == Qt.LeftButton:
 
             if(abs(event.x() - self.mousePressX) < 5 and abs(event.y() - self.mousePressY) < 5):
-                #ray = self.getRay(event.x(), event.y())
-                #origin = self.camera.getNpPosition()
-                
-                #if self.currentMode == ConnectionMode:
-                #    self.graph.selectConnectionNode(origin[0].item(), origin[1].item(), origin[2].item(), ray[0].item(), ray[1].item(), ray[2].item())
-                #elif self.currentMode == BreakMode:
-                #    self.graph.selectBreakEdge(origin[0].item(), origin[1].item(), origin[2].item(), ray[0].item(), ray[1].item(), ray[2].item())
-                #elif self.currentMode == SplitMode:
-                #    self.graph.selectSplitEdge(origin[0].item(), origin[1].item(), origin[2].item(), ray[0].item(), ray[1].item(), ray[2].item())
                 if self.currentMode == ConnectionMode:
                     self.graph.selectConnectionNode(event.x(), self.height() - event.y())
                 elif self.currentMode == BreakMode:
@@ -578,47 +524,8 @@ class GLWidget(QtOpenGL.QGLWidget):
         dirVec = view * self.camera.get_near() + h*projectedX + v*projectedY
         dirVec = dirVec / np.linalg.norm(dirVec)
 
-        #pos = self.camera.getNpPosition() + view * self.camera.get_near() + h*projectedX + v*projectedY
-        
-        #dirVec = pos - self.camera.getNpPosition()
-        
-        #dirVec = dirVec/ np.linalg.norm(dirVec)
         
         return dirVec
             
-    
-    # def enterConnectionMode(self, ConnectionWidget : Ui_ConnectionTabWidget):
-    #     self.currentMode = 0
-    #     self.connectionWidget = ConnectionWidget
-    #     self.connectionOptions.exitMode()
-    #     self.breakOptions.exitMode()
-    #     self.splitOptions.exitMode()
-    #     self.addNodeOptions.exitMode()
-    #     self.connectionOptions.enterMode(self.graph.getNumComponents(), ConnectionWidget)
-    #
-    #
-    # def enterBreakMode(self, BreakWidget : Ui_BreakTabWidget):
-    #     self.currentMode = 1
-    #     self.connectionOptions.exitMode()
-    #     self.breakOptions.exitMode()
-    #     self.splitOptions.exitMode()
-    #     self.addNodeOptions.exitMode()
-    #     self.breakOptions.enterMode(BreakWidget)
-    #
-    #
-    # def enterSplitMode(self, SplitWidget : Ui_SplitTabWidget):
-    #     self.currentMode = 2
-    #     self.connectionOptions.exitMode()
-    #     self.breakOptions.exitMode()
-    #     self.splitOptions.exitMode()
-    #     self.addNodeOptions.exitMode()
-    #     self.splitOptions.enterMode(SplitWidget)
 
-    # def enterAddNodeMode(self, AddNodeWidget : Ui_AddNodeTabWidget):
-    #     self.currentMode = 3
-    #     self.connectionOptions.exitMode()
-    #     self.breakOptions.exitMode()
-    #     self.splitOptions.exitMode()
-    #     self.addNodeOptions.exitMode()
-    #     self.addNodeOptions.enterMode(AddNodeWidget)
         
