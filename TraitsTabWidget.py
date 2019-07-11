@@ -2817,6 +2817,13 @@ class Ui_TraitsTabWidget(object):
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
         self.RemovePrimaryBranchesButton.setPalette(palette)
         self.RemovePrimaryBranchesButton.setObjectName("RemovePrimaryBranchesButton")
+        self.showBranchTracingCheck = QtWidgets.QCheckBox(self.frame_4)
+        self.showBranchTracingCheck.setGeometry(QtCore.QRect(150, 10, 161, 17))
+        self.showBranchTracingCheck.setMinimumSize(QtCore.QSize(160, 0))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.showBranchTracingCheck.setFont(font)
+        self.showBranchTracingCheck.setObjectName("showBranchTracingCheck")
         self.horizontalLayout_5.addWidget(self.frame_4)
         self.verticalLayout.addLayout(self.horizontalLayout_5)
         self.gridLayout.addLayout(self.verticalLayout, 3, 0, 1, 1)
@@ -2880,6 +2887,7 @@ class Ui_TraitsTabWidget(object):
         self.showTraitsOnlyCheck.setText(_translate("TraitsTabWidget", "Show confirmed feature only"))
         self.RemovePrimaryBranchesButton.setToolTip(_translate("TraitsTabWidget", "ctrl+a"))
         self.RemovePrimaryBranchesButton.setText(_translate("TraitsTabWidget", "Remove selection"))
+        self.showBranchTracingCheck.setText(_translate("TraitsTabWidget", "Show Branch Tracing"))
 
 
 if __name__ == "__main__":

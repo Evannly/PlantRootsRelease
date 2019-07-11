@@ -8473,6 +8473,30 @@
            <string>Remove selection</string>
           </property>
          </widget>
+         <widget class="QCheckBox" name="showBranchTracingCheck">
+          <property name="geometry">
+           <rect>
+            <x>150</x>
+            <y>10</y>
+            <width>161</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>160</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Show Branch Tracing</string>
+          </property>
+         </widget>
         </widget>
        </item>
       </layout>

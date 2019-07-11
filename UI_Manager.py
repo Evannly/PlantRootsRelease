@@ -607,6 +607,11 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def tracePrimaryBranchesChecked(self, doTrace: bool):
         if self.graph != None:
             self.graph.setDisplayTracingPrimaryBranches(doTrace)
+            
+    @pyqtSlot(bool)
+    def showBranchTracingChecked(self, doShow: bool):
+        if self.graph != None:
+            self.graph.setDisplayTracingTree(doShow)
 
     @pyqtSlot(bool)
     def showPrimaryNodesChecked(self, doShow: bool):
@@ -758,6 +763,8 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
             self.showClusterInputChecked)
         self.tracePrimaryBranchesCheck.toggled.connect(
             self.tracePrimaryBranchesChecked)
+        self.showBranchTracingCheck.toggled.connect(
+            self.showBranchTracingChecked)
         self.FindPrimaryNodesButton.clicked.connect(
             self.FindPrimaryNodePressed)
 
