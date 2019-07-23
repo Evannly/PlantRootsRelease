@@ -23,7 +23,7 @@ import sys
 from VisualizationTabWidget import Ui_VisualizationTabWidget
 from EditingTabWidget import Ui_EditingTabWidget
 from TraitsTabWidget import Ui_TraitsTabWidget
-from SorghumWidget import Sorghum_Window
+from SorghumTabWidget import Sorghum_Window
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
@@ -549,32 +549,30 @@ class SorghumTabWidget(Sorghum_Window,QObject):
     @pyqtSlot(bool)
     def identifyBranchesPressed(self, doShow : bool):
         try:
-            if len(self.lineEdit_3.text()) > 0 :
-                self.minBranchSize = int(self.lineEdit_3.text())
-            else:
-                self.minBranchSize = -1
             if len(self.lineEdit_4.text()) > 0 :
-                self.maxBranchSize = int(self.lineEdit_4.text())
+                self.maxLength = int(self.lineEdit_4.text())
             else:
-                self.maxBranchSize = -1
+                self.maxLength = -1
             if len(self.lineEdit_5.text()) > 0 :
-                self.radiusTolerance = float(self.lineEdit_5.text())
+                self.ratioRatio = float(self.lineEdit_5.text())
             else:
-                self.radiusTolerance = -1
+                self.ratioRatio = 1000
             if len(self.lineEdit_6.text()) > 0 :
-                self.tipAngleThresh = float(self.lineEdit_6.text())
+                self.maxCurvature = float(self.lineEdit_6.text())
             else:
-                self.tipAngleThresh = -1
+                self.maxCurvature = -1
             if len(self.lineEdit_7.text()) > 0 :
                 self.tortuosityThresh = float(self.lineEdit_7.text())
             else:
-                self.tortuosityThresh = -1
+                self.tortuosityThresh = 1000
         except ValueError:
             print("Branch parameter input error")
             
         if self.graph != None:
-            self.graph.setSorghumBranchParameters(self.minBranchSize,self.maxBranchSize,self.radiusTolerance,self.tipAngleThresh,self.tortuosityThresh)
-            self.graph.sorghumBranchOperation()
+            #self.graph.setSorghumBranchParameters(self.minBranchSize,self.maxBranchSize,self.radiusTolerance,self.tipAngleThresh,self.tortuosityThresh)
+            #self.graph.sorghumBranchOperation()
+            print("trying to find curves")
+            self.graph.FindSmoothCurves(self.maxCurvature, self.tortuosityThresh, self.ratioRatio,self.maxLength)
                   
     @pyqtSlot(bool)
     def showStemChecked(self, doShow : bool):
@@ -591,6 +589,16 @@ class SorghumTabWidget(Sorghum_Window,QObject):
         #self.graph.setEdgeSelectionColor(pickedColor.redF(), pickedColor.greenF(), pickedColor.blueF())
         self.currentStemColor = pickedColor
     @pyqtSlot(bool)
+    def fairData(self, doShow : bool):
+        try:
+            if len(self.lineEdit_3.text()) > 0 :
+                self.filename = str(self.lineEdit_3.text())
+                self.graph.saveFairedSkeleton(self.filename)
+            else:
+                self.filename = ""
+        except ValueError:
+            print("Branch parameter input error")
+    @pyqtSlot(bool)
     def branchColorClicked(self, active):
         pickedColor = QtWidgets.QColorDialog.getColor(self.currentEdgeSelectionColor, self.widget)
         #self.graph.setEdgeSelectionColor(pickedColor.redF(), pickedColor.greenF(), pickedColor.blueF())
@@ -606,13 +614,13 @@ class SorghumTabWidget(Sorghum_Window,QObject):
         self.checkBox_2.toggled.connect(self.showStemChecked)
         self.pushButton_2.clicked.connect(self.identifyBranchesPressed)
         self.checkBox_3.toggled.connect(self.showBranchChecked)
-        self.upperThresh = 0.0
-        self.lowerThresh = 0.0
-        self.minBranchSize = 0
-        self.maxBranchSize = 0
-        self.radiusTolerance = 0
-        self.tipAngleThresh = 0
-        self.tortuosityThresh = 0
+        self.upperThresh = -1
+        self.lowerThresh = -1
+        self.filename = -1
+        self.maxLength = -1
+        self.ratioRatio = -1
+        self.maxCurvature = -1
+        self.tortuosityThresh = -1
         self.showBranch = False
         self.horizontalSlider.setValue(0)
         self.horizontalSlider.valueChanged.connect(self.stemScaleChanged)
@@ -622,6 +630,7 @@ class SorghumTabWidget(Sorghum_Window,QObject):
         self.pushButton_4.clicked.connect(self.branchColorClicked)
         self.currentStemColor = QColor(255, 255, 255)
         self.currentBrnachColor = QColor(255,255,255)
+        self.pushButton_6.clicked.connect(self.fairData)
 class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     modeChangeSig = pyqtSignal(int)
     loadTraitsSig = pyqtSignal()

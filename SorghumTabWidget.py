@@ -241,12 +241,6 @@ class Sorghum_Window(object):
 "color: rgb(255, 255, 255);\n"
 "font: 11pt \"MS Shell Dlg 2\";")
         self.label_3.setObjectName("label_3")
-        self.label_7 = QtWidgets.QLabel(self.frame_4)
-        self.label_7.setGeometry(QtCore.QRect(20, 40, 141, 21))
-        self.label_7.setStyleSheet("border-color: rgba(255, 255, 255, 0);\n"
-"color: rgb(255, 255, 255);\n"
-"font: 10pt \"MS Shell Dlg 2\";")
-        self.label_7.setObjectName("label_7")
         self.label_8 = QtWidgets.QLabel(self.frame_4)
         self.label_8.setGeometry(QtCore.QRect(20, 70, 141, 21))
         self.label_8.setStyleSheet("border-color: rgba(255, 255, 255, 0);\n"
@@ -266,7 +260,7 @@ class Sorghum_Window(object):
 "font: 10pt \"MS Shell Dlg 2\";")
         self.label_10.setObjectName("label_10")
         self.label_11 = QtWidgets.QLabel(self.frame_4)
-        self.label_11.setGeometry(QtCore.QRect(20, 160, 131, 21))
+        self.label_11.setGeometry(QtCore.QRect(20, 160, 151, 21))
         self.label_11.setStyleSheet("border-color: rgba(255, 255, 255, 0);\n"
 "color: rgb(255, 255, 255);\n"
 "font: 10pt \"MS Shell Dlg 2\";")
@@ -304,6 +298,13 @@ class Sorghum_Window(object):
 "color: rgb(255, 255, 255);\n"
 "font: 10pt \"MS Shell Dlg 2\";")
         self.commandLinkButton.setObjectName("commandLinkButton")
+        self.pushButton_6 = QtWidgets.QPushButton(self.frame_4)
+        self.pushButton_6.setGeometry(QtCore.QRect(20, 40, 141, 21))
+        self.pushButton_6.setStyleSheet("border-color: rgba(255, 255, 255, 0);\n"
+"background-color: rgb(190, 190, 190);\n"
+"font: 10pt \"MS Shell Dlg 2\";\n"
+"color: rgb(0, 0, 0);")
+        self.pushButton_6.setObjectName("pushButton_6")
         self.frame_5 = QtWidgets.QFrame(self.frame)
         self.frame_5.setGeometry(QtCore.QRect(0, 510, 331, 301))
         self.frame_5.setStyleSheet("border-color: rgb(149, 149, 149);\n"
@@ -340,12 +341,8 @@ class Sorghum_Window(object):
 "color: rgb(255, 255, 255);\n"
 "font: 10pt \"MS Shell Dlg 2\";")
         self.label_13.setObjectName("label_13")
-        self.comboBox = QtWidgets.QComboBox(self.frame_5)
-        self.comboBox.setGeometry(QtCore.QRect(150, 100, 131, 21))
-        self.comboBox.setStyleSheet("background-color: rgb(193, 193, 193);")
-        self.comboBox.setObjectName("comboBox")
         self.checkBox_3 = QtWidgets.QCheckBox(self.frame_5)
-        self.checkBox_3.setGeometry(QtCore.QRect(20, 130, 151, 21))
+        self.checkBox_3.setGeometry(QtCore.QRect(20, 130, 171, 21))
         self.checkBox_3.setStyleSheet("border-color: rgba(255, 255, 255, 0);\n"
 "font: 10pt \"MS Shell Dlg 2\";\n"
 "color: rgb(255, 255, 255);")
@@ -366,10 +363,20 @@ class Sorghum_Window(object):
 "color: rgb(255, 255, 255);\n"
 "font: 10pt \"MS Shell Dlg 2\";")
         self.label_15.setObjectName("label_15")
-        self.comboBox_2 = QtWidgets.QComboBox(self.frame_5)
-        self.comboBox_2.setGeometry(QtCore.QRect(150, 220, 131, 21))
-        self.comboBox_2.setStyleSheet("background-color: rgb(193, 193, 193);")
-        self.comboBox_2.setObjectName("comboBox_2")
+        self.pushButton_3 = QtWidgets.QPushButton(self.frame_5)
+        self.pushButton_3.setGeometry(QtCore.QRect(150, 100, 141, 21))
+        self.pushButton_3.setStyleSheet("border-color: rgba(255, 255, 255, 0);\n"
+"background-color: rgb(190, 190, 190);\n"
+"font: 10pt \"MS Shell Dlg 2\";\n"
+"color: rgb(0, 0, 0);")
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_4 = QtWidgets.QPushButton(self.frame_5)
+        self.pushButton_4.setGeometry(QtCore.QRect(150, 220, 141, 21))
+        self.pushButton_4.setStyleSheet("border-color: rgba(255, 255, 255, 0);\n"
+"background-color: rgb(190, 190, 190);\n"
+"font: 10pt \"MS Shell Dlg 2\";\n"
+"color: rgb(0, 0, 0);")
+        self.pushButton_4.setObjectName("pushButton_4")
         self.verticalLayout.addWidget(self.frame)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
@@ -386,13 +393,13 @@ class Sorghum_Window(object):
         self.checkBox.setText(_translate("TraitsTabWidget", "Use Thickest Vertex"))
         self.pushButton.setText(_translate("TraitsTabWidget", "Identify Stem"))
         self.label_3.setText(_translate("TraitsTabWidget", "Branch Identification"))
-        self.label_7.setText(_translate("TraitsTabWidget", "Minimum Branch Size"))
-        self.label_8.setText(_translate("TraitsTabWidget", "Maximum Branch Size"))
-        self.label_9.setText(_translate("TraitsTabWidget", "Radius Tolerance"))
-        self.label_10.setText(_translate("TraitsTabWidget", "TipAngle Threshold"))
-        self.label_11.setText(_translate("TraitsTabWidget", "Tortuosity Threshold"))
+        self.label_8.setText(_translate("TraitsTabWidget", "Min Edge Length"))
+        self.label_9.setText(_translate("TraitsTabWidget", "Min thick/width ratio"))
+        self.label_10.setText(_translate("TraitsTabWidget", "Max Curvature"))
+        self.label_11.setText(_translate("TraitsTabWidget", "Sinuosity upperThresh"))
         self.pushButton_2.setText(_translate("TraitsTabWidget", "Identify Branches"))
         self.commandLinkButton.setText(_translate("TraitsTabWidget", "Optional Paramerters"))
+        self.pushButton_6.setText(_translate("TraitsTabWidget", "Faire(enter filename)"))
         self.label_4.setText(_translate("TraitsTabWidget", "Visualization"))
         self.checkBox_2.setText(_translate("TraitsTabWidget", "Show Stem"))
         self.label_12.setText(_translate("TraitsTabWidget", "Stem Thickness"))
@@ -400,4 +407,6 @@ class Sorghum_Window(object):
         self.checkBox_3.setText(_translate("TraitsTabWidget", "Show Primary Branches"))
         self.label_14.setText(_translate("TraitsTabWidget", "Branch Thickness"))
         self.label_15.setText(_translate("TraitsTabWidget", "Branch Color"))
+        self.pushButton_3.setText(_translate("TraitsTabWidget", "Select Color"))
+        self.pushButton_4.setText(_translate("TraitsTabWidget", "Select Color"))
 
