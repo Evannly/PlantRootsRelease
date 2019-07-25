@@ -2851,7 +2851,7 @@ class Ui_TraitsTabWidget(object):
         self.showStemSuggestionCheck.setText(_translate("TraitsTabWidget", "Show Auto Stem"))
         self.ViewNodeInfoButton.setToolTip(_translate("TraitsTabWidget", "ctrl+a"))
         self.ViewNodeInfoButton.setText(_translate("TraitsTabWidget", "View node info"))
-        self.LowThresholdLineEdit.setText(_translate("TraitsTabWidget", "4"))
+        self.LowThresholdLineEdit.setText(_translate("TraitsTabWidget", "10"))
         self.DisplayOptions_6.setText(_translate("TraitsTabWidget", "Low T"))
         self.DisplayOptions_2.setText(_translate("TraitsTabWidget", "Nodes"))
         self.SelectPriamryNodeButton.setToolTip(_translate("TraitsTabWidget", "ctrl+a"))
