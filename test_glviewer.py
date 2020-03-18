@@ -39,6 +39,10 @@ SelectPrimaryBranchesMode = 8
 SelectSegmentPointMode = 9
 
 ViewNodeInfoMode = 10
+
+SelectStemTopNodeMode = 11
+SelectStemBottomNodeMode = 12
+
 useArcball = True
 
 
@@ -527,6 +531,10 @@ class GLWidget(QGLWidget):
                     self.graph.selectRemoveComponentEdge(event.x(), self.height() - event.y())
                 elif self.currentMode == SelectStemMode:
                     self.graph.selectStemStartEnd(event.x(), self.height() - event.y())
+                elif self.currentMode == SelectStemTopNodeMode:
+                    self.graph.selectStemTopNode(event.x(), self.height() - event.y())
+                elif self.currentMode == SelectStemBottomNodeMode:
+                    self.graph.selectStemBottomNode(event.x(), self.height() - event.y())
                 elif self.currentMode == SelectPrimaryNodesMode:
                     self.graph.selectStemPrimaryNode(event.x(), self.height() - event.y())
                 elif self.currentMode == SelectPrimaryBranchesMode:
@@ -535,6 +543,7 @@ class GLWidget(QGLWidget):
                     self.graph.selectSegmentPointAction(event.x(), self.height() - event.y())
                 elif self.currentMode == ViewNodeInfoMode:
                     self.graph.viewNodeInfoAction(event.x(), self.height() - event.y())
+
 
             self.isMouseLeftDown = False
             self.doStopRotation = True

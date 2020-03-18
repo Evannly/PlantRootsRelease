@@ -42,6 +42,9 @@ SELECT_PRIMARY_BRANCHES_MODE = 8
 SELECT_SEGMENT_POINT_MODE = 9
 VIEW_NODE_INFO_MODE = 10
 
+SELECT_TOP_NODE_MODE = 11
+SELECT_BOTTOM_NODE_MODE = 12
+
 DEFAULT_EDGE_HEATMAP_TYPE = 9
 DEFAULT_NODE_HEATMAP_TYPE = 0
 DEFAULT_EDGE_COLORIZATION_TYPE = 0
@@ -541,15 +544,23 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def saveTraitsPressed(self, pressed: bool):
         self.saveTraitsSig.emit()
 
-    @pyqtSlot(bool)
-    def showStemChecked(self, doShow: bool):
-        self.showStem = doShow
-        if self.graph != None:
-            self.graph.setDisplayStem(self.showStem)
+    # @pyqtSlot(bool)
+    # def showStemChecked(self, doShow: bool):
+    #     self.showStem = doShow
+    #     if self.graph != None:
+    #         self.graph.setDisplayStem(self.showStem)
 
     @pyqtSlot(bool)
     def selectStemPressed(self, pressed: bool):
         self.changeMode(SELECT_STEM_MODE)
+
+    @pyqtSlot(bool)
+    def selectTopNodePressed(self, pressed: bool):
+        self.changeMode(SELECT_TOP_NODE_MODE)
+
+    @pyqtSlot(bool)
+    def selectBottomNodePressed(self, pressed: bool):
+        self.changeMode(SELECT_BOTTOM_NODE_MODE)
 
     @pyqtSlot(bool)
     def confirmStemPressed(self, pressed: bool):
@@ -740,9 +751,11 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.saveTraitsButton.clicked.connect(self.saveTraitsPressed)
 
         # manual find stem
-        self.showStemCheck.toggled.connect(self.showStemChecked)
         self.SelectStemButton.clicked.connect(self.selectStemPressed)
         self.ConfirmStemButton.clicked.connect(self.confirmStemPressed)
+        self.SelectTopNodeButton.clicked.connect(self.selectTopNodePressed)
+        self.SelectBottomNodeButton.clicked.connect(self.selectBottomNodePressed)
+
         # automatic find stem
         self.ViewNodeInfoButton.clicked.connect(self.ViewNodeInfoPressed)
         self.showStemSuggestionCheck.toggled.connect(
@@ -1034,6 +1047,16 @@ class RootsTabbedProgram(QMainWindow):
         SelectStemButton.triggered.connect(self.enterSelectStemMode)
         self.modeMenu.addAction(SelectStemButton)
 
+        SelectTopNodeButton = QAction('Stem', self)
+        SelectTopNodeButton.setStatusTip('Select the top node of a stem')
+        SelectTopNodeButton.triggered.connect(self.enterSelectTopNodeMode)
+        self.modeMenu.addAction(SelectTopNodeButton)
+
+        SelectBottomNodeButton = QAction('Stem', self)
+        SelectBottomNodeButton.setStatusTip('Select the bottom node of a stem')
+        SelectBottomNodeButton.triggered.connect(self.enterSelectBottomNodeMode)
+        self.modeMenu.addAction(SelectBottomNodeButton)
+
         SelectPriamryNodeButton = QAction('Primary Nodes', self)
         SelectPriamryNodeButton.setStatusTip('Select lists of primary nodes')
         SelectPriamryNodeButton.triggered.connect(
@@ -1180,7 +1203,21 @@ class RootsTabbedProgram(QMainWindow):
             return
         print("Enter select stem mode 903")
         self.currentMode = SELECT_STEM_MODE
-        self.tabWidget.setCurrentIndex(6)
+        self.tabWidget.setCurrentIndex(SELECT_STEM_MODE)
+        
+    def enterSelectTopNodeMode(self):
+        if self.currentMode == SELECT_TOP_NODE_MODE or self.currentMode == -2:
+            return
+        print("Enter select top node mode")
+        self.currentMode = SELECT_TOP_NODE_MODE
+        self.tabWidget.setCurrentIndex(SELECT_TOP_NODE_MODE)
+        
+    def enterSelectBottomNodeMode(self):
+        if self.currentMode == SELECT_BOTTOM_NODE_MODE or self.currentMode == -2:
+            return
+        print("Enter select bottom node mode")
+        self.currentMode = SELECT_BOTTOM_NODE_MODE
+        self.tabWidget.setCurrentIndex(SELECT_BOTTOM_NODE_MODE)
 
     def enterSelectStemPrimaryNodeMode(self):
         if self.currentMode == SELECT_PRIMARY_NODES_MODE or self.currentMode == -2:
