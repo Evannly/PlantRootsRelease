@@ -319,8 +319,8 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.constantNodeColor.clicked.connect(self.constantNodeColorClicked)
         self.edgeSelectionColor.clicked.connect(self.edgeSelectionColorClicked)
 
-        self.showEndpoints.setChecked(True)
-        self.showJunctions.setChecked(True)
+        self.showEndpoints.setChecked(False)
+        self.showJunctions.setChecked(False)
         self.showEdges.setChecked(True)
         self.magnifyNonBridges.setChecked(False)
 
@@ -544,16 +544,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def saveTraitsPressed(self, pressed: bool):
         self.saveTraitsSig.emit()
 
-    # @pyqtSlot(bool)
-    # def showStemChecked(self, doShow: bool):
-    #     self.showStem = doShow
-    #     if self.graph != None:
-    #         self.graph.setDisplayStem(self.showStem)
-
-    @pyqtSlot(bool)
-    def selectStemPressed(self, pressed: bool):
-        self.changeMode(SELECT_STEM_MODE)
-
     @pyqtSlot(bool)
     def selectTopNodePressed(self, pressed: bool):
         self.changeMode(SELECT_TOP_NODE_MODE)
@@ -561,12 +551,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     @pyqtSlot(bool)
     def selectBottomNodePressed(self, pressed: bool):
         self.changeMode(SELECT_BOTTOM_NODE_MODE)
-
-    @pyqtSlot(bool)
-    def confirmStemPressed(self, pressed: bool):
-        if self.mode == SELECT_STEM_MODE and self.graph:
-            self.graph.selectStemOperation()
-            self.updateWidget()
 
     @pyqtSlot(bool)
     def ViewNodeInfoPressed(self, pressed: bool):
@@ -751,8 +735,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.saveTraitsButton.clicked.connect(self.saveTraitsPressed)
 
         # manual find stem
-        self.SelectStemButton.clicked.connect(self.selectStemPressed)
-        self.ConfirmStemButton.clicked.connect(self.confirmStemPressed)
         self.SelectTopNodeButton.clicked.connect(self.selectTopNodePressed)
         self.SelectBottomNodeButton.clicked.connect(self.selectBottomNodePressed)
 
@@ -1042,21 +1024,6 @@ class RootsTabbedProgram(QMainWindow):
         RemoveComponentButton.triggered.connect(self.enterRemoveComponentMode)
         self.modeMenu.addAction(RemoveComponentButton)
 
-        SelectStemButton = QAction('Stem', self)
-        SelectStemButton.setStatusTip('Select two end node of a stem')
-        SelectStemButton.triggered.connect(self.enterSelectStemMode)
-        self.modeMenu.addAction(SelectStemButton)
-
-        SelectTopNodeButton = QAction('Stem', self)
-        SelectTopNodeButton.setStatusTip('Select the top node of a stem')
-        SelectTopNodeButton.triggered.connect(self.enterSelectTopNodeMode)
-        self.modeMenu.addAction(SelectTopNodeButton)
-
-        SelectBottomNodeButton = QAction('Stem', self)
-        SelectBottomNodeButton.setStatusTip('Select the bottom node of a stem')
-        SelectBottomNodeButton.triggered.connect(self.enterSelectBottomNodeMode)
-        self.modeMenu.addAction(SelectBottomNodeButton)
-
         SelectPriamryNodeButton = QAction('Primary Nodes', self)
         SelectPriamryNodeButton.setStatusTip('Select lists of primary nodes')
         SelectPriamryNodeButton.triggered.connect(
@@ -1116,8 +1083,8 @@ class RootsTabbedProgram(QMainWindow):
             QSizePolicy.Expanding, QSizePolicy.Expanding))
         self.glwidget.setMinimumSize(200, 200)
 
-        w = 1800
-        h = 1000
+        w = 2880
+        h = 1800
         self.resize(w, h)
         self.installEventFilter(self)
         self.setFocusPolicy(Qt.StrongFocus)

@@ -220,7 +220,8 @@ class GLWidget(QGLWidget):
         reflectance2 = (0.0, 0.8, 0.2, 1.0)
         reflectance3 = (0.2, 0.2, 1.0, 1.0)
         
-        
+        glutInit(sys.argv)
+
         glEnable(GL_LIGHT0)
         #glEnable(GL_LIGHT1)
         #glEnable(GL_LIGHT2)
@@ -289,8 +290,6 @@ class GLWidget(QGLWidget):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
-        # gluLookAt(pos[0], pos[1], pos[2], lpos[0], lpos[1], lpos[2], up[0], up[1], up[2])
-        # self.arcball.rotate()
 
         lightpos = pos
         color = (1.0, 0.0, 1.0, 1.0)
@@ -303,10 +302,6 @@ class GLWidget(QGLWidget):
         self.graph.draw()
         ldir /= np.linalg.norm(ldir)
         glPopMatrix()
-
-        # glPushMatrix()
-        # self.graph.drawBox()
-        # glPopMatrix()
 
         glPopMatrix()
 
@@ -486,25 +481,6 @@ class GLWidget(QGLWidget):
             
             self.lastMouseX = event.x()
             self.lastMouseY = event.y()
-            
-        #if self.isMouseLeftDown or self.isMouseRightDown or self.isMouseMiddleDown:
-        #    if event.x() > self.width():
-        #        self.lastMouseX = 0
-        #        newPoint = self.mapToGlobal(QPoint(0, event.y()))
-        #        QCursor.setPos(newPoint.x(), newPoint.y())
-        #    elif event.x() < 0:
-        #        self.lastMouseX = self.width()
-        #        newPoint = self.mapToGlobal(QPoint(self.width(), event.y()))
-        #        QCursor.setPos(newPoint.x(), newPoint.y())
-                
-        #    if event.y() > self.height():
-        #        self.lastMouseY = 0
-        #        newPoint = self.mapToGlobal(QPoint(event.x(), 0))
-        #        QCursor.setPos(newPoint.x(), newPoint.y())
-        #    if event.y() < 0:
-        #        self.lastMouseY = self.height()
-        #        newPoint = self.mapToGlobal(QPoint(event.x(), self.height()))
-        #        QCursor.setPos(newPoint.x(), newPoint.y())
         
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.RightButton:
@@ -512,15 +488,6 @@ class GLWidget(QGLWidget):
         elif event.button() == Qt.LeftButton:
 
             if(abs(event.x() - self.mousePressX) < 5 and abs(event.y() - self.mousePressY) < 5):
-                #ray = self.getRay(event.x(), event.y())
-                #origin = self.camera.getNpPosition()
-                
-                #if self.currentMode == ConnectionMode:
-                #    self.graph.selectConnectionNode(origin[0].item(), origin[1].item(), origin[2].item(), ray[0].item(), ray[1].item(), ray[2].item())
-                #elif self.currentMode == BreakMode:
-                #    self.graph.selectBreakEdge(origin[0].item(), origin[1].item(), origin[2].item(), ray[0].item(), ray[1].item(), ray[2].item())
-                #elif self.currentMode == SplitMode:
-                #    self.graph.selectSplitEdge(origin[0].item(), origin[1].item(), origin[2].item(), ray[0].item(), ray[1].item(), ray[2].item())
                 if self.currentMode == ConnectionMode:
                     self.graph.selectConnectionNode(event.x(), self.height() - event.y())
                 elif self.currentMode == BreakMode:
