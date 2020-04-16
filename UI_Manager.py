@@ -28,7 +28,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import test_glviewer as tgl
 
-############# Macros #############
+############# Mode Enum #############
 
 NO_MODE = 0
 CONNECTION_MODE = 1
@@ -36,22 +36,19 @@ BREAK_MODE = 2
 EDGE_SPLITTING_MODE = 3
 COMPONENT_REMOVAL_MODE = 4
 
-SELECT_STEM_MODE = 6
+SELECT_TOP_NODE_MODE = 5
+SELECT_BOTTOM_NODE_MODE = 6
+
 SELECT_PRIMARY_NODES_MODE = 7
 SELECT_PRIMARY_BRANCHES_MODE = 8
 SELECT_SEGMENT_POINT_MODE = 9
 VIEW_NODE_INFO_MODE = 10
-
-SELECT_TOP_NODE_MODE = 11
-SELECT_BOTTOM_NODE_MODE = 12
 
 DEFAULT_EDGE_HEATMAP_TYPE = 9
 DEFAULT_NODE_HEATMAP_TYPE = 0
 DEFAULT_EDGE_COLORIZATION_TYPE = 0
 DEFAULT_NODE_COLORIZATION_TYPE = 0
 HEATMAP_NONE_TYPE_COLOR = [1.0, 0.0, 0.0, 1.0]
-
-########### End Macros ############
 
 def getColorList(size, colormap):
     colorList = []
@@ -170,12 +167,12 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.graph.setNodeColorCeiling(ceiling)
 
     @pyqtSlot(bool)
-    def showJunctionsPressed(self, showJunctions: bool):
-        self.graph.showJunctions(showJunctions)
+    def showHideJunctionsPressed(self):
+        self.graph.showHideJunctions()
 
     @pyqtSlot(bool)
-    def showEndpointsPressed(self, showEndpoints: bool):
-        self.graph.showEndpoints(showEndpoints)
+    def showHideEndpointsPressed(self):
+        self.graph.showHideEndpoints()
 
     @pyqtSlot(bool)
     def showEdgesPressed(self, showEdges: bool):
@@ -308,8 +305,8 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.edgeHeatmapType.setCurrentIndex(DEFAULT_EDGE_HEATMAP_TYPE)
         self.nodeHeatmapType.setCurrentIndex(DEFAULT_NODE_HEATMAP_TYPE)
 
-        self.showEndpoints.toggled.connect(self.showEndpointsPressed)
-        self.showJunctions.toggled.connect(self.showJunctionsPressed)
+        self.showHideEndpoints.clicked.connect(self.showHideEndpointsPressed)
+        self.showHideJunctions.clicked.connect(self.showHideJunctionsPressed)
         self.showEdges.toggled.connect(self.showEdgesPressed)
         self.magnifyNonBridges.toggled.connect(self.magnifyNonBridgesPressed)
         self.displayOnlyNonBridges.toggled.connect(
@@ -319,8 +316,6 @@ class VisualizationTabWidget(Ui_VisualizationTabWidget, QObject):
         self.constantNodeColor.clicked.connect(self.constantNodeColorClicked)
         self.edgeSelectionColor.clicked.connect(self.edgeSelectionColorClicked)
 
-        self.showEndpoints.setChecked(False)
-        self.showJunctions.setChecked(False)
         self.showEdges.setChecked(True)
         self.magnifyNonBridges.setChecked(False)
 
@@ -473,8 +468,8 @@ class EditingTabWidget(Ui_EditingTabWidget, QObject):
                     self.graph.setDisplayOnlySelectedComponents(
                         self.showSelected)
                     self.graph.setShowBoundingBoxes(self.showBoxes)
-                self.graph.setDisplayStem(False)
-                self.graph.setDisplayPrimaryNodes(False)
+                # self.graph.setDisplayStem(False)
+                # self.graph.setDisplayPrimaryNodes(False)
             self.modeChangeSig.emit(self.mode)
 
     def exitCurrentMode(self):
@@ -546,20 +541,22 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
 
     @pyqtSlot(bool)
     def selectTopNodePressed(self, pressed: bool):
-        self.changeMode(SELECT_TOP_NODE_MODE)
+        if self.graph != None:
+            self.graph.setMode(SELECT_TOP_NODE_MODE)
 
     @pyqtSlot(bool)
     def selectBottomNodePressed(self, pressed: bool):
-        self.changeMode(SELECT_BOTTOM_NODE_MODE)
+        if self.graph != None:
+            self.graph.setMode(SELECT_BOTTOM_NODE_MODE)
 
     @pyqtSlot(bool)
     def ViewNodeInfoPressed(self, pressed: bool):
         self.changeMode(VIEW_NODE_INFO_MODE)
 
     @pyqtSlot(bool)
-    def showStemSuggestionChecked(self, doShow: bool):
+    def showHideStemPressed(self, pressed: bool):
         if self.graph != None:
-            self.graph.setDisplaySuggestedStem(doShow)
+            self.graph.showHideStem()
 
     @pyqtSlot(bool)
     def FindStemPressed(self, pressed: bool):
@@ -589,9 +586,14 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
             self.updateWidget()
 
     @pyqtSlot(bool)
-    def showNodeSuggestionChecked(self, doShow: bool):
+    def showHideWhorlPressed(self, pressed: bool):
         if self.graph != None:
-            self.graph.setDisplaySuggestedNode(doShow)
+            self.graph.showHideWhorl()
+
+    @pyqtSlot(bool)
+    def deleteWhorlPressed(self, pressed: bool):
+        if self.graph != None:
+            self.graph.deleteWhorl()
             
     @pyqtSlot(bool)
     def showClusterInputChecked(self, doShow: bool):
@@ -607,20 +609,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def showBranchTracingChecked(self, doShow: bool):
         if self.graph != None:
             self.graph.setDisplayTracingTree(doShow)
-
-    @pyqtSlot(bool)
-    def showPrimaryNodesChecked(self, doShow: bool):
-        self.showPrimaryNodes = doShow
-        if self.graph != None:
-            self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
-
-    @pyqtSlot(bool)
-    def randomColorizePrimaryNodesChecked(self, pressed: bool):
-        self.isRandomColorizePrimaryNodes = pressed
-        if self.graph != None:
-            self.graph.setRandomColorizePrimaryNodes(
-                self.isRandomColorizePrimaryNodes)
-            self.updateWidget()
 
     @pyqtSlot(bool)
     def selectStemPrimaryNodePressed(self, pressed: bool):
@@ -712,11 +700,8 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.widget = widget
         self.graph = graphObject
         self.mode = NO_MODE
-        self.showStem = False
-        self.showPrimaryNodes = False
         self.currentPrimaryNode = 0
         self.showConfirmedPrimaryBranches = False
-        self.isRandomColorizePrimaryNodes = False
         self.showOnlyBranchesOfCurrentPrimaryNode = False
         self.showSelectedSegment = False
         self.showTraitsOnly = False
@@ -740,20 +725,17 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
 
         # automatic find stem
         self.ViewNodeInfoButton.clicked.connect(self.ViewNodeInfoPressed)
-        self.showStemSuggestionCheck.toggled.connect(
-            self.showStemSuggestionChecked)
+        self.showHideStemButton.clicked.connect(self.showHideStemPressed)
         self.FindStemButton.clicked.connect(self.FindStemPressed)
 
         # manual find primary nodes
-        self.showPrimaryNodesCheck.toggled.connect(
-            self.showPrimaryNodesChecked)
         self.SelectPriamryNodeButton.clicked.connect(
             self.selectStemPrimaryNodePressed)
         self.ConfirmPrimaryNodesButton.clicked.connect(
             self.confirmPrimaryNodesPressed)
         # automatic find primary nodes
-        self.showNodeSuggestionCheck.toggled.connect(
-            self.showNodeSuggestionChecked)
+        self.showHideWhorlButton.clicked.connect(self.showHideWhorlPressed)
+        self.deleteWhorlButton.clicked.connect(self.deleteWhorlPressed)
         self.showClusterInputCheck.toggled.connect(
             self.showClusterInputChecked)
         self.tracePrimaryBranchesCheck.toggled.connect(
@@ -765,8 +747,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
 
         self.PrimaryNodeSelectionColorButton.clicked.connect(
             self.PrimaryNodeSelectionColorPressed)
-        self.RandomColorizePrimaryNodesCheck.toggled.connect(
-            self.randomColorizePrimaryNodesChecked)
 
         self.CurrentPrimaryNodeCombo.currentIndexChanged.connect(
             self.currentPrimaryNodeChanged)
@@ -809,14 +789,14 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
                     self.graph.setDisplayOnlySelectedComponents(
                         self.showSelected)
                     self.graph.setShowBoundingBoxes(self.showBoxes)
-                if mode != CONNECTION_MODE and mode != EDGE_SPLITTING_MODE \
-                        and mode != BREAK_MODE \
-                        and mode != COMPONENT_REMOVAL_MODE:
-                    self.graph.setDisplayStem(self.showStem)
-                    self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
-                else:
-                    self.graph.setDisplayStem(False)
-                    self.graph.setDisplayPrimaryNodes(False)
+                # if mode != CONNECTION_MODE and mode != EDGE_SPLITTING_MODE \
+                #         and mode != BREAK_MODE \
+                #         and mode != COMPONENT_REMOVAL_MODE:
+                    # self.graph.setDisplayStem(self.showStem)
+                    # self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
+                # else:
+                    # self.graph.setDisplayStem(False)
+                    # self.graph.setDisplayPrimaryNodes(False)
             self.modeChangeSig.emit(self.mode)
 
     def exitCurrentMode(self):
@@ -826,15 +806,15 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         print("setting graph")
         self.graph = graph
         self.updateWidget()
-        if self.graph != None:
-            if self.mode != CONNECTION_MODE and self.mode != EDGE_SPLITTING_MODE \
-                    and self.mode != BREAK_MODE \
-                    and self.mode != COMPONENT_REMOVAL_MODE:
-                self.graph.setDisplayStem(self.showStem)
-                self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
-            else:
-                self.graph.setDisplayStem(False)
-                self.graph.setDisplayPrimaryNodes(False)
+        # if self.graph != None:
+        #     if self.mode != CONNECTION_MODE and self.mode != EDGE_SPLITTING_MODE \
+        #             and self.mode != BREAK_MODE \
+        #             and self.mode != COMPONENT_REMOVAL_MODE:
+                # self.graph.setDisplayStem(self.showStem)
+                # self.graph.setDisplayPrimaryNodes(self.showPrimaryNodes)
+            # else:
+                # self.graph.setDisplayStem(False)
+                # self.graph.setDisplayPrimaryNodes(False)
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
@@ -842,6 +822,7 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         return QAbstractTableModel.headerData(self, section, orientation, role)
 
     def updateWidget(self):
+        print("updateWidget")
         if self.graph != None:
             # update current primary node combo
             self.CurrentPrimaryNodeCombo.currentIndexChanged.disconnect(

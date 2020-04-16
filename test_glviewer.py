@@ -33,15 +33,15 @@ BreakMode = 2
 SplitMode = 3
 RemoveComponentMode = 4
 
-SelectStemMode = 6
+EDIT_WHORL_MODE = 2
+SELECT_TOP_NODE_MODE = 5
+SELECT_BOTTOM_NODE_MODE = 6
+
 SelectPrimaryNodesMode = 7
 SelectPrimaryBranchesMode = 8
 SelectSegmentPointMode = 9
 
 ViewNodeInfoMode = 10
-
-SelectStemTopNodeMode = 11
-SelectStemBottomNodeMode = 12
 
 useArcball = True
 
@@ -488,28 +488,35 @@ class GLWidget(QGLWidget):
         elif event.button() == Qt.LeftButton:
 
             if(abs(event.x() - self.mousePressX) < 5 and abs(event.y() - self.mousePressY) < 5):
-                if self.currentMode == ConnectionMode:
-                    self.graph.selectConnectionNode(event.x(), self.height() - event.y())
-                elif self.currentMode == BreakMode:
-                    self.graph.selectBreakEdge(event.x(), self.height() - event.y())
-                elif self.currentMode == SplitMode:
-                    self.graph.selectSplitEdge(event.x(), self.height() - event.y())
-                elif self.currentMode == RemoveComponentMode:
-                    self.graph.selectRemoveComponentEdge(event.x(), self.height() - event.y())
-                elif self.currentMode == SelectStemMode:
-                    self.graph.selectStemStartEnd(event.x(), self.height() - event.y())
-                elif self.currentMode == SelectStemTopNodeMode:
+                print(self.graph.getMode())
+                # if self.currentMode == ConnectionMode:
+                #     self.graph.selectConnectionNode(event.x(), self.height() - event.y())
+                # elif self.currentMode == BreakMode:
+                #     self.graph.selectBreakEdge(event.x(), self.height() - event.y())
+                # elif self.currentMode == SplitMode:
+                #     self.graph.selectSplitEdge(event.x(), self.height() - event.y())
+                # elif self.currentMode == RemoveComponentMode:
+                #     self.graph.selectRemoveComponentEdge(event.x(), self.height() - event.y())
+                # elif self.graph.getMode() == SELECT_TOP_NODE_MODE:
+                #     self.graph.selectStemTopNode(event.x(), self.height() - event.y())
+                # elif self.graph.getMode() == SELECT_BOTTOM_NODE_MODE:
+                #     self.graph.selectStemBottomNode(event.x(), self.height() - event.y())
+                # elif self.currentMode == SelectPrimaryNodesMode:
+                #     self.graph.selectStemPrimaryNode(event.x(), self.height() - event.y())
+                # elif self.currentMode == SelectPrimaryBranchesMode:
+                #     self.graph.selectPrimaryBranches(event.x(), self.height() - event.y())
+                # elif self.currentMode == SelectSegmentPointMode:
+                #     self.graph.selectSegmentPointAction(event.x(), self.height() - event.y())
+                # elif self.currentMode == ViewNodeInfoMode:
+                #     self.graph.viewNodeInfoAction(event.x(), self.height() - event.y())
+
+                if self.graph.getMode() == EDIT_WHORL_MODE:
+                    self.graph.selectWhorl(event.x(), self.height() - event.y())
+                elif self.graph.getMode() == SELECT_TOP_NODE_MODE:
                     self.graph.selectStemTopNode(event.x(), self.height() - event.y())
-                elif self.currentMode == SelectStemBottomNodeMode:
+                elif self.graph.getMode() == SELECT_BOTTOM_NODE_MODE:
                     self.graph.selectStemBottomNode(event.x(), self.height() - event.y())
-                elif self.currentMode == SelectPrimaryNodesMode:
-                    self.graph.selectStemPrimaryNode(event.x(), self.height() - event.y())
-                elif self.currentMode == SelectPrimaryBranchesMode:
-                    self.graph.selectPrimaryBranches(event.x(), self.height() - event.y())
-                elif self.currentMode == SelectSegmentPointMode:
-                    self.graph.selectSegmentPointAction(event.x(), self.height() - event.y())
-                elif self.currentMode == ViewNodeInfoMode:
-                    self.graph.viewNodeInfoAction(event.x(), self.height() - event.y())
+
 
 
             self.isMouseLeftDown = False
