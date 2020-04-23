@@ -33,16 +33,20 @@ import test_glviewer as tgl
 NO_MODE = 0
 CONNECTION_MODE = 1
 BREAK_MODE = 2
+EDIT_WHORL_MODE = 2
 EDGE_SPLITTING_MODE = 3
 COMPONENT_REMOVAL_MODE = 4
 
 SELECT_TOP_NODE_MODE = 5
 SELECT_BOTTOM_NODE_MODE = 6
 
-SELECT_PRIMARY_NODES_MODE = 7
+ADD_WHORL_MODE = 7
 SELECT_PRIMARY_BRANCHES_MODE = 8
 SELECT_SEGMENT_POINT_MODE = 9
-VIEW_NODE_INFO_MODE = 10
+SELECT_WHORL_UPPER_BOUND_MODE = 10
+SELECT_WHORL_LOWER_BOUND_MODE = 11
+
+#####################################
 
 DEFAULT_EDGE_HEATMAP_TYPE = 9
 DEFAULT_NODE_HEATMAP_TYPE = 0
@@ -550,10 +554,6 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
             self.graph.setMode(SELECT_BOTTOM_NODE_MODE)
 
     @pyqtSlot(bool)
-    def ViewNodeInfoPressed(self, pressed: bool):
-        self.changeMode(VIEW_NODE_INFO_MODE)
-
-    @pyqtSlot(bool)
     def showHideStemPressed(self, pressed: bool):
         if self.graph != None:
             self.graph.showHideStem()
@@ -594,31 +594,26 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     def deleteWhorlPressed(self, pressed: bool):
         if self.graph != None:
             self.graph.deleteWhorl()
-            
+
     @pyqtSlot(bool)
-    def showClusterInputChecked(self, doShow: bool):
+    def addWhorlPressed(self, pressed: bool):
         if self.graph != None:
-            self.graph.setDisplayClusterInput(doShow)
-            
+            self.graph.setMode(ADD_WHORL_MODE)
+        
     @pyqtSlot(bool)
-    def tracePrimaryBranchesChecked(self, doTrace: bool):
-        if self.graph != None:
-            self.graph.setDisplayTracingPrimaryBranches(doTrace)
+    def selectWhorlUpperBoundPressed(self, pressed: bool):
+        if self.graph != None and self.graph.whorlSelectionValid():
+            self.graph.setMode(SELECT_WHORL_UPPER_BOUND_MODE)
+
+    @pyqtSlot(bool)
+    def selectWhorlLowerBoundPressed(self, pressed: bool):
+        if self.graph != None and self.graph.whorlSelectionValid():
+            self.graph.setMode(SELECT_WHORL_LOWER_BOUND_MODE)
             
     @pyqtSlot(bool)
     def showBranchTracingChecked(self, doShow: bool):
         if self.graph != None:
             self.graph.setDisplayTracingTree(doShow)
-
-    @pyqtSlot(bool)
-    def selectStemPrimaryNodePressed(self, pressed: bool):
-        self.changeMode(SELECT_PRIMARY_NODES_MODE)
-
-    @pyqtSlot(bool)
-    def confirmPrimaryNodesPressed(self, pressed: bool):
-        if self.mode == SELECT_PRIMARY_NODES_MODE and self.graph:
-            self.graph.selectStemPrimaryNodeOperation()
-            self.updateWidget()
 
     @pyqtSlot(int)
     def currentPrimaryNodeChanged(self, node: int):
@@ -724,22 +719,15 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.SelectBottomNodeButton.clicked.connect(self.selectBottomNodePressed)
 
         # automatic find stem
-        self.ViewNodeInfoButton.clicked.connect(self.ViewNodeInfoPressed)
         self.showHideStemButton.clicked.connect(self.showHideStemPressed)
         self.FindStemButton.clicked.connect(self.FindStemPressed)
 
-        # manual find primary nodes
-        self.SelectPriamryNodeButton.clicked.connect(
-            self.selectStemPrimaryNodePressed)
-        self.ConfirmPrimaryNodesButton.clicked.connect(
-            self.confirmPrimaryNodesPressed)
         # automatic find primary nodes
         self.showHideWhorlButton.clicked.connect(self.showHideWhorlPressed)
-        self.deleteWhorlButton.clicked.connect(self.deleteWhorlPressed)
-        self.showClusterInputCheck.toggled.connect(
-            self.showClusterInputChecked)
-        self.tracePrimaryBranchesCheck.toggled.connect(
-            self.tracePrimaryBranchesChecked)
+        self.AddWhorlButton.clicked.connect(self.addWhorlPressed)
+        self.DeleteWhorlButton.clicked.connect(self.deleteWhorlPressed)
+        self.SelectWhorlUpperBoundButton.clicked.connect(self.selectWhorlUpperBoundPressed)
+        self.SelectWhorlLowerBoundButton.clicked.connect(self.selectWhorlLowerBoundPressed)
         self.showBranchTracingCheck.toggled.connect(
             self.showBranchTracingChecked)
         self.FindPrimaryNodesButton.clicked.connect(
@@ -942,13 +930,6 @@ class RootsTabbedProgram(QMainWindow):
         saveTraitsButton = QAction('Save Traits', self)
         saveTraitsButton.triggered.connect(self.saveTraitsFile)
         self.fileMenu.addAction(saveTraitsButton)
-
-        closeButton = QAction('Close', self)
-        closeButton.setShortcut('Ctrl+W')
-        closeButton.setShortcutContext(Qt.ApplicationShortcut)
-        closeButton.setStatusTip('Close current file')
-        closeButton.triggered.connect(self.closeFile)
-        self.fileMenu.addAction(closeButton)
         
         exitButton = QAction('Quit', self)
         exitButton.setShortcut('Ctrl+Q')
@@ -956,22 +937,6 @@ class RootsTabbedProgram(QMainWindow):
         exitButton.setStatusTip('Quit application')
         exitButton.triggered.connect(self.quitApp)
         self.fileMenu.addAction(exitButton)
-        
-        self.editMenu = self.mainMenu.addMenu('Edit')
-        
-        undoButton = QAction('Undo', self)
-        undoButton.setShortcut('Ctrl+Z')
-        undoButton.setShortcutContext(Qt.ApplicationShortcut)
-        undoButton.setStatusTip('Undo the last action')
-        undoButton.triggered.connect(self.undo)
-        self.editMenu.addAction(undoButton)
-        
-        redoButton = QAction('Redo', self)
-        redoButton.setShortcut('Ctrl+Y')
-        redoButton.setShortcutContext(Qt.ApplicationShortcut)
-        redoButton.setStatusTip('Redo the last action')
-        redoButton.triggered.connect(self.redo)
-        self.editMenu.addAction(redoButton)
 
         self.modeMenu = self.mainMenu.addMenu('Mode')
 
@@ -1004,12 +969,6 @@ class RootsTabbedProgram(QMainWindow):
             'Remove entire component of selected edge')
         RemoveComponentButton.triggered.connect(self.enterRemoveComponentMode)
         self.modeMenu.addAction(RemoveComponentButton)
-
-        SelectPriamryNodeButton = QAction('Primary Nodes', self)
-        SelectPriamryNodeButton.setStatusTip('Select lists of primary nodes')
-        SelectPriamryNodeButton.triggered.connect(
-            self.enterSelectStemPrimaryNodeMode)
-        self.modeMenu.addAction(SelectPriamryNodeButton)
 
         SelectPrimaryBranchesButton = QAction('Primary Edges', self)
         SelectPrimaryBranchesButton.setStatusTip(
@@ -1247,19 +1206,6 @@ class RootsTabbedProgram(QMainWindow):
 
         if self.saveFileName[0] != "":
             self.glwidget.graph.saveTraitsToFile(self.saveFileName[0])
-            
-    def undo(self):
-        pass
-    
-    def redo(self):
-        pass
-    
-    def closeFile(self):
-        choice = QMessageBox.question(self, 'Close', 'Close current file?', QMessageBox.Ok | QMessageBox.Cancel)
-        if choice == QMessageBox.Ok:
-            pass
-        else:
-            pass
     
     def quitApp(self):
         choice = QMessageBox.question(self, 'Quit', 'Quit application?', QMessageBox.Ok | QMessageBox.Cancel)

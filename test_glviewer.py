@@ -37,11 +37,12 @@ EDIT_WHORL_MODE = 2
 SELECT_TOP_NODE_MODE = 5
 SELECT_BOTTOM_NODE_MODE = 6
 
-SelectPrimaryNodesMode = 7
+ADD_WHORL_MODE = 7
 SelectPrimaryBranchesMode = 8
 SelectSegmentPointMode = 9
 
-ViewNodeInfoMode = 10
+SELECT_WHORL_UPPER_BOUND_MODE = 10
+SELECT_WHORL_LOWER_BOUND_MODE = 11
 
 useArcball = True
 
@@ -516,6 +517,12 @@ class GLWidget(QGLWidget):
                     self.graph.selectStemTopNode(event.x(), self.height() - event.y())
                 elif self.graph.getMode() == SELECT_BOTTOM_NODE_MODE:
                     self.graph.selectStemBottomNode(event.x(), self.height() - event.y())
+                elif self.graph.getMode() == ADD_WHORL_MODE:
+                    self.graph.addWhorl(event.x(), self.height() - event.y())
+                elif self.graph.getMode() == SELECT_WHORL_UPPER_BOUND_MODE:
+                    self.graph.selectWhorlUpperBound(event.x(), self.height() - event.y())
+                elif self.graph.getMode() == SELECT_WHORL_LOWER_BOUND_MODE:
+                    self.graph.selectWhorlLowerBound(event.x(), self.height() - event.y())
 
 
 
