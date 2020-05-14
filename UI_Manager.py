@@ -534,6 +534,11 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
     saveTraitsSig = pyqtSignal()
 
     @pyqtSlot(bool)
+    def preprocessPressed(self, pressed: bool):
+        if self.graph != None:
+            self.graph.preprocess()
+
+    @pyqtSlot(bool)
     def loadTraitsPressed(self, pressed: bool):
         self.changeMode(SELECT_PRIMARY_BRANCHES_MODE)
         self.loadTraitsSig.emit()
@@ -611,9 +616,9 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
             self.graph.setMode(SELECT_WHORL_LOWER_BOUND_MODE)
             
     @pyqtSlot(bool)
-    def showBranchTracingChecked(self, doShow: bool):
+    def showHideBranchPressed(self, pressed: bool):
         if self.graph != None:
-            self.graph.setDisplayTracingTree(doShow)
+            self.graph.showHideBranch()
 
     @pyqtSlot(int)
     def currentPrimaryNodeChanged(self, node: int):
@@ -711,6 +716,8 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
             self.currentPrimaryNodeSelectionColor.greenF(),
             self.currentPrimaryNodeSelectionColor.blueF())
 
+        self.preprocessButton.clicked.connect(self.preprocessPressed)
+
         self.loadTraitsButton.clicked.connect(self.loadTraitsPressed)
         self.saveTraitsButton.clicked.connect(self.saveTraitsPressed)
 
@@ -728,8 +735,7 @@ class TraitsTabWidget(Ui_TraitsTabWidget, QObject):
         self.DeleteWhorlButton.clicked.connect(self.deleteWhorlPressed)
         self.SelectWhorlUpperBoundButton.clicked.connect(self.selectWhorlUpperBoundPressed)
         self.SelectWhorlLowerBoundButton.clicked.connect(self.selectWhorlLowerBoundPressed)
-        self.showBranchTracingCheck.toggled.connect(
-            self.showBranchTracingChecked)
+        self.showHideBranchButton.clicked.connect(self.showHideBranchPressed)
         self.FindPrimaryNodesButton.clicked.connect(
             self.FindPrimaryNodePressed)
 
